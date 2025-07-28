@@ -2,105 +2,148 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <title>เกมจัดหมู่หนังสือ DDC</title>
+  <title>เกมจัดหมู่หนังสือ</title>
   <style>
     body {
-      font-family: 'Sarabun', sans-serif;
-      background: #f0f9ff;
-      color: #333;
-      padding: 2rem;
-      max-width: 700px;
-      margin: auto;
+      font-family: 'Kanit', sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #f5f8ff;
     }
     h1 {
-      color: #1e88e5;
+      color: #1a237e;
     }
-    button {
-      background-color: #2196f3;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      margin: 10px 0;
-      font-size: 1rem;
-      cursor: pointer;
-      border-radius: 8px;
+    input, button {
+      padding: 10px;
+      font-size: 18px;
+      margin: 10px;
     }
-    input {
-      padding: 8px;
-      margin-top: 5px;
-      font-size: 1rem;
+    #leaderboard {
+      margin-top: 40px;
     }
-    .leaderboard {
-      margin-top: 30px;
-      padding: 15px;
-      background: #e3f2fd;
+    table {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto;
+      border-collapse: collapse;
+      background: #fff;
       border-radius: 10px;
+      overflow: hidden;
     }
-    .score-item {
-      padding: 4px 0;
+    th, td {
+      padding: 12px;
+      border: 1px solid #ddd;
+    }
+    th {
+      background: #3949ab;
+      color: white;
+    }
+    tr:nth-child(even) {
+      background: #f0f0f0;
     }
   </style>
 </head>
 <body>
-  <h1>เกมจัดหมู่หนังสือ DDC</h1>
+  <h1>📚 เกมจัดหมู่หนังสือ (DDC)</h1>
+  <div id="game">
+    <input type="text" id="nameInput" placeholder="ใส่ชื่อของคุณ" />
+    <br>
+    <button onclick="startGame()">เริ่มเกม</button>
+    <div id="questionBox" style="margin-top: 20px;"></div>
+    <div id="scoreBox" style="font-size: 24px; margin-top: 20px;"></div>
+  </div>
 
-  <label>กรอกชื่อของคุณ:</label><br>
-  <input type="text" id="playerName" placeholder="ชื่อนักเรียน"><br><br>
-
-  <button onclick="startGame()">เริ่มเกม</button>
-
-  <div class="leaderboard">
+  <div id="leaderboard">
     <h2>🏆 กระดานคะแนน</h2>
-    <div id="leaderboardList">กำลังโหลด...</div>
+    <table id="scoreTable">
+      <thead>
+        <tr><th>ชื่อ</th><th>คะแนน</th><th>เวลา</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwUYjClplRkxbzwvTpHWZeZTQorUAbLrFPP8uBKTEeWDzQtTVVY5OU5M8-gHsfbnD48/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwUYjClplRkxbzwvTpHWZeZTQorUAbLrFPP8uBKTEeWDzQtTVVY5OU5M8-gHsfbnD48/exec";
+
+    let score = 0;
+    let current = 0;
+    const questions = [
+      { q: "000 หมวดอะไร?", a: "ความรู้ทั่วไป" },
+      { q: "100 หมวดอะไร?", a: "ปรัชญา" },
+      { q: "300 หมวดอะไร?", a: "สังคมศาสตร์" },
+    ];
 
     function startGame() {
-      const name = document.getElementById('playerName').value.trim();
-      if (!name) {
-        alert('กรุณากรอกชื่อ');
-        return;
-      }
-
-      // สุ่มคะแนน 0-9 จำลองแทนการเล่นเกม
-      const score = Math.floor(Math.random() * 10);
-
-      fetch(scriptURL, {
-        method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "submit", name, score })
-      })
-      .then(res => res.json())
-      .then(data => {
-        alert("ส่งคะแนนเรียบร้อย: " + score + " คะแนน");
-        loadLeaderboard();
-      })
-      .catch(err => {
-        console.error("ส่งคะแนนล้มเหลว:", err);
-        alert("ส่งคะแนนไม่สำเร็จ");
-      });
+      score = 0;
+      current = 0;
+      document.getElementById("scoreBox").innerText = "";
+      showQuestion();
     }
 
-    function loadLeaderboard() {
-      fetch(`${scriptURL}?action=scorelist`, { mode: "cors" })
+    function showQuestion() {
+      if (current < questions.length) {
+        const q = questions[current];
+        document.getElementById("questionBox").innerHTML = `
+          <p style="font-size:20px;">${q.q}</p>
+          <input type="text" id="answerInput" placeholder="คำตอบของคุณ" />
+          <br>
+          <button onclick="submitAnswer()">ตอบ</button>
+        `;
+      } else {
+        finishGame();
+      }
+    }
+
+    function submitAnswer() {
+      const userAns = document.getElementById("answerInput").value.trim();
+      if (userAns === questions[current].a) {
+        score++;
+      }
+      current++;
+      showQuestion();
+    }
+
+    function finishGame() {
+      const name = document.getElementById("nameInput").value.trim();
+      document.getElementById("questionBox").innerHTML = '';
+      document.getElementById("scoreBox").innerText = `คุณได้ ${score} คะแนน`;
+
+      if (name !== "") {
+        // ส่งคะแนนไป Apps Script
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ name: name, score: score })
+        })
         .then(res => res.json())
         .then(data => {
-          const lb = document.getElementById("leaderboardList");
-          lb.innerHTML = "";
-          data.forEach((entry, index) => {
-            lb.innerHTML += `<div class="score-item">${index + 1}. ${entry.name} - ${entry.score} คะแนน</div>`;
-          });
+          console.log("ส่งคะแนนแล้ว", data);
+          loadScores();
         })
         .catch(err => {
-          console.error("โหลดคะแนนล้มเหลว:", err);
-          document.getElementById("leaderboardList").innerText = "ไม่สามารถโหลดคะแนนได้";
+          console.error("เกิดข้อผิดพลาดในการส่งคะแนน", err);
+        });
+      }
+    }
+
+    function loadScores() {
+      fetch(SCRIPT_URL + "?action=scorelist")
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector("#scoreTable tbody");
+          tbody.innerHTML = "";
+          data.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${row.name}</td><td>${row.score}</td><td>${new Date(row.timestamp).toLocaleString()}</td>`;
+            tbody.appendChild(tr);
+          });
         });
     }
 
-    window.onload = loadLeaderboard;
+    loadScores(); // โหลดตอนเปิดหน้า
   </script>
 </body>
 </html>
