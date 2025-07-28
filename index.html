@@ -5,210 +5,102 @@
   <title>เกมจัดหมู่หนังสือ DDC</title>
   <style>
     body {
-      font-family: "Prompt", sans-serif;
-      background: linear-gradient(to bottom right, #e0f7fa, #fce4ec);
+      font-family: 'Sarabun', sans-serif;
+      background: #f0f9ff;
       color: #333;
-      text-align: center;
-      padding: 20px;
-    }
-
-    .game-container {
+      padding: 2rem;
       max-width: 700px;
       margin: auto;
-      background: #fff;
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-
-    .character {
-      width: 150px;
-      border-radius: 12px;
-      margin-bottom: 10px;
+    h1 {
+      color: #1e88e5;
     }
-
-    .question {
-      font-size: 1.4rem;
-      margin: 20px 0;
-    }
-
-    .choices button {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
-      padding: 12px;
-      font-size: 1.1rem;
-      border-radius: 12px;
-      border: none;
-      background-color: #f8bbd0;
-      cursor: pointer;
-      transition: 0.2s;
-    }
-
-    .choices button:hover {
-      background-color: #f06292;
+    button {
+      background-color: #2196f3;
       color: white;
-    }
-
-    .response {
-      font-size: 1.2rem;
-      margin-top: 15px;
-      min-height: 40px;
-    }
-
-    .score {
-      font-size: 1.4rem;
-      margin-top: 20px;
-    }
-
-    input[type="text"] {
-      padding: 10px;
-      font-size: 1.1rem;
-      width: 60%;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    button.start-btn {
+      border: none;
       padding: 10px 20px;
-      font-size: 1.1rem;
-      border-radius: 8px;
-      background-color: #4dd0e1;
-      color: white;
-      border: none;
-      margin-top: 10px;
+      margin: 10px 0;
+      font-size: 1rem;
       cursor: pointer;
+      border-radius: 8px;
     }
-
-    .start-screen {
-      margin-bottom: 20px;
+    input {
+      padding: 8px;
+      margin-top: 5px;
+      font-size: 1rem;
+    }
+    .leaderboard {
+      margin-top: 30px;
+      padding: 15px;
+      background: #e3f2fd;
+      border-radius: 10px;
+    }
+    .score-item {
+      padding: 4px 0;
     }
   </style>
 </head>
 <body>
-  <div class="game-container">
-    <img src="https://cdn.pixabay.com/photo/2021/05/15/11/00/girl-6255532_1280.jpg" alt="มายด์" class="character" />
-    <div class="start-screen">
-      <h2>ยินดีต้อนรับสู่เกมจัดหมู่หนังสือ DDC 📚</h2>
-      <p>กรุณาใส่ชื่อนักเรียนก่อนเริ่มเกม:</p>
-      <input type="text" id="playerNameInput" placeholder="ชื่อนักเรียน" />
-      <br>
-      <button onclick="startGame()" class="start-btn">เริ่มเกม</button>
-    </div>
+  <h1>เกมจัดหมู่หนังสือ DDC</h1>
 
-    <div id="quizContainer" style="display:none;">
-      <div class="question" id="questionText">คำถามจะอยู่ตรงนี้</div>
-      <div class="choices" id="choicesContainer"></div>
-      <div class="response" id="responseText"></div>
-      <div class="score" id="scoreText">คะแนน: 0</div>
-    </div>
+  <label>กรอกชื่อของคุณ:</label><br>
+  <input type="text" id="playerName" placeholder="ชื่อนักเรียน"><br><br>
 
-    <div id="endScreen" style="display:none;">
-      <h2>🎉 จบเกมแล้ว! 🎉</h2>
-      <p id="finalScore"></p>
-    </div>
+  <button onclick="startGame()">เริ่มเกม</button>
+
+  <div class="leaderboard">
+    <h2>🏆 กระดานคะแนน</h2>
+    <div id="leaderboardList">กำลังโหลด...</div>
   </div>
 
   <script>
-    const questions = [
-      {
-        question: "หนังสือเลขหมู่ 300 คือหมวดใด?",
-        choices: [
-          { text: "เทคโนโลยี", correct: false },
-          { text: "ศาสนา", correct: false },
-          { text: "สังคมศาสตร์", correct: true },
-          { text: "วรรณกรรม", correct: false }
-        ],
-        correctResponse: "เก่งมาก! มายด์ชอบความรู้ของเธอ 😊",
-        wrongResponse: "ยังไม่ใช่น้า~ ลองใหม่นะ 💡"
-      },
-      {
-        question: "000 ใน DDC คือหมวดอะไร?",
-        choices: [
-          { text: "คอมพิวเตอร์และข้อมูลทั่วไป", correct: true },
-          { text: "ศิลปะ", correct: false },
-          { text: "ภาษา", correct: false },
-          { text: "วิทยาศาสตร์", correct: false }
-        ],
-        correctResponse: "สุดยอด! เธอเข้าใจดีมากเลย 💻📘",
-        wrongResponse: "โอ๊ะ! ยังไม่ใช่ ลองทบทวนใหม่นะ 📚"
-      },
-      {
-        question: "ถ้าจัดหนังสือผิดหมวดจะเกิดอะไรขึ้น?",
-        choices: [
-          { text: "หาหนังสือไม่เจอ", correct: true },
-          { text: "หนังสือจะหายไปเลย", correct: false },
-          { text: "ไม่มีปัญหา", correct: false },
-          { text: "หมวดจะซ่อมตัวเอง", correct: false }
-        ],
-        correctResponse: "เยี่ยมไปเลย! แบบนี้มายด์ปลื้มมาก 💘",
-        wrongResponse: "ไม่ใช่นะ ลองคิดใหม่อีกครั้งน้า~"
-      }
-    ];
-
-    let currentQuestion = 0;
-    let score = 0;
-    let playerName = "";
-
-    const questionText = document.getElementById("questionText");
-    const choicesContainer = document.getElementById("choicesContainer");
-    const responseText = document.getElementById("responseText");
-    const scoreText = document.getElementById("scoreText");
-    const playerNameInput = document.getElementById("playerNameInput");
-    const quizContainer = document.getElementById("quizContainer");
-    const startScreen = document.querySelector(".start-screen");
-    const endScreen = document.getElementById("endScreen");
-    const finalScore = document.getElementById("finalScore");
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwUYjClplRkxbzwvTpHWZeZTQorUAbLrFPP8uBKTEeWDzQtTVVY5OU5M8-gHsfbnD48/exec";
 
     function startGame() {
-      playerName = playerNameInput.value.trim();
-      if (!playerName) return alert("กรุณาใส่ชื่อนักเรียนก่อนนะจ๊ะ!");
-      startScreen.style.display = "none";
-      quizContainer.style.display = "block";
-      currentQuestion = 0;
-      score = 0;
-      showQuestion();
-    }
+      const name = document.getElementById('playerName').value.trim();
+      if (!name) {
+        alert('กรุณากรอกชื่อ');
+        return;
+      }
 
-    function showQuestion() {
-      const q = questions[currentQuestion];
-      questionText.textContent = q.question;
-      choicesContainer.innerHTML = "";
-      responseText.textContent = "";
+      // สุ่มคะแนน 0-9 จำลองแทนการเล่นเกม
+      const score = Math.floor(Math.random() * 10);
 
-      q.choices.forEach(choice => {
-        const btn = document.createElement("button");
-        btn.textContent = choice.text;
-        btn.onclick = () => handleAnswer(choice.correct, q);
-        choicesContainer.appendChild(btn);
+      fetch(scriptURL, {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "submit", name, score })
+      })
+      .then(res => res.json())
+      .then(data => {
+        alert("ส่งคะแนนเรียบร้อย: " + score + " คะแนน");
+        loadLeaderboard();
+      })
+      .catch(err => {
+        console.error("ส่งคะแนนล้มเหลว:", err);
+        alert("ส่งคะแนนไม่สำเร็จ");
       });
     }
 
-    function handleAnswer(isCorrect, question) {
-      if (isCorrect) {
-        score++;
-        responseText.textContent = question.correctResponse;
-      } else {
-        responseText.textContent = question.wrongResponse;
-      }
-
-      scoreText.textContent = `คะแนน: ${score}`;
-      currentQuestion++;
-
-      setTimeout(() => {
-        if (currentQuestion < questions.length) {
-          showQuestion();
-        } else {
-          endGame();
-        }
-      }, 1200);
+    function loadLeaderboard() {
+      fetch(`${scriptURL}?action=scorelist`, { mode: "cors" })
+        .then(res => res.json())
+        .then(data => {
+          const lb = document.getElementById("leaderboardList");
+          lb.innerHTML = "";
+          data.forEach((entry, index) => {
+            lb.innerHTML += `<div class="score-item">${index + 1}. ${entry.name} - ${entry.score} คะแนน</div>`;
+          });
+        })
+        .catch(err => {
+          console.error("โหลดคะแนนล้มเหลว:", err);
+          document.getElementById("leaderboardList").innerText = "ไม่สามารถโหลดคะแนนได้";
+        });
     }
 
-    function endGame() {
-      quizContainer.style.display = "none";
-      endScreen.style.display = "block";
-      finalScore.innerHTML = `เก่งมาก ${playerName} ได้คะแนนทั้งหมด <strong>${score}</strong> คะแนน 🏆`;
-    }
+    window.onload = loadLeaderboard;
   </script>
 </body>
 </html>
