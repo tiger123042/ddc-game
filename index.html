@@ -1,206 +1,131 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <title>เกมจัดหมู่หนังสือ DDC</title>
+  <meta charset="UTF-8">
+  <title>เกม DDC - พร้อมระบบคะแนน</title>
   <style>
     body {
-      font-family: 'Prompt', sans-serif;
-      background: linear-gradient(to top right, #ffe8ec, #dbeafe);
+      font-family: 'Kanit', sans-serif;
+      background: linear-gradient(to right, #fceabb, #f8b500);
+      margin: 0;
       padding: 20px;
-      color: #333;
+      text-align: center;
     }
-    #game-container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+
     h1 {
-      text-align: center;
-      color: #d63384;
+      color: #222;
     }
-    input, button {
-      font-size: 1.1em;
-      padding: 10px;
-      margin: 10px 0;
-      width: 100%;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-    }
+
     button {
-      background: #d63384;
-      color: white;
+      padding: 10px 20px;
+      font-size: 18px;
       border: none;
+      border-radius: 10px;
+      background-color: #ff8c00;
+      color: white;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background 0.3s;
     }
+
     button:hover {
-      background: #a10f57;
+      background-color: #e67e00;
     }
-    .question {
-      font-size: 1.2em;
-      margin: 20px 0;
+
+    #leaderboard {
+      margin-top: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    #choices button {
-      width: 100%;
-      margin: 5px 0;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-      background: #a5d8ff;
-      color: #333;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    #choices button:hover {
-      background: #339af0;
-      color: white;
-    }
-    #scoreboard {
-      margin-top: 20px;
-    }
+
     table {
-      width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      width: 100%;
     }
+
     th, td {
-      padding: 8px;
-      border: 1px solid #ccc;
-      text-align: center;
+      padding: 10px;
+      border: 1px solid #ddd;
     }
+
     th {
-      background: #e0a7ca;
-      color: #4b004b;
+      background-color: #f1c40f;
     }
   </style>
 </head>
 <body>
 
-<div id="game-container">
-  <h1>เกมจัดหมู่หนังสือ DDC</h1>
+  <h1>เกมจัดหมวดหมู่หนังสือ DDC</h1>
+  <button onclick="startGame()">เริ่มเล่น</button>
 
-  <div id="start-screen">
-    <input type="text" id="playerName" placeholder="ใส่ชื่อนักเรียน" />
-    <button id="startBtn">เริ่มเล่น</button>
-  </div>
-
-  <div id="question-screen" style="display:none;">
-    <div class="question" id="questionText"></div>
-    <div id="choices"></div>
-  </div>
-
-  <div id="result-screen" style="display:none;">
-    <h2>คะแนนของคุณ: <span id="finalScore"></span> / 9</h2>
-    <button id="showLeaderboardBtn">ดูตารางคะแนน</button>
-  </div>
-
-  <div id="scoreboard" style="display:none;">
-    <h2>ตารางคะแนนนักเรียน</h2>
-    <table>
-      <thead><tr><th>ชื่อ</th><th>คะแนน</th><th>เวลา</th></tr></thead>
-      <tbody id="scoreTableBody"></tbody>
+  <div id="leaderboard">
+    <h2>📊 กระดานคะแนน</h2>
+    <table id="scoreTable">
+      <thead>
+        <tr>
+          <th>ชื่อ</th>
+          <th>คะแนน</th>
+          <th>วันที่</th>
+        </tr>
+      </thead>
+      <tbody id="scoreBody">
+        <tr><td colspan="3">กำลังโหลด...</td></tr>
+      </tbody>
     </table>
-    <button id="backBtn">เล่นใหม่</button>
   </div>
-</div>
 
-<script>
-  const questions = [
-    { text: "หนังสือเลขหมู่ 300 คือหมวดอะไร?", choices: [{text:"ศิลปะ", score:0},{text:"สังคมศาสตร์", score:3},{text:"วิทยาศาสตร์", score:0}] },
-    { text: "ถ้าฉันอยากเรียนเรื่องจักรวาล ต้องหาที่หมวดไหน?", choices: [{text:"520", score:3},{text:"920", score:0},{text:"320", score:0}] },
-    { text: "หนังสือ 641 นี่เกี่ยวกับอะไร?", choices: [{text:"การทำอาหาร", score:3},{text:"กีฬา", score:0},{text:"แฟชั่น", score:0}] }
-  ];
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwrNo-HajkrMjQI92o-Yb0EBa4h6p3I_WKUAvjF5ZzYbD0NNQ8mPll5TdYOmVah6pfWmg/exec';
 
-  let current = 0;
-  let score = 0;
-  let player = "";
+    function startGame() {
+      const name = prompt("กรอกชื่อของคุณ:");
+      if (!name) return;
 
-  const startBtn = document.getElementById('startBtn');
-  const playerNameInput = document.getElementById('playerName');
-  const startScreen = document.getElementById('start-screen');
-  const questionScreen = document.getElementById('question-screen');
-  const questionText = document.getElementById('questionText');
-  const choicesDiv = document.getElementById('choices');
-  const resultScreen = document.getElementById('result-screen');
-  const finalScoreSpan = document.getElementById('finalScore');
-  const showLeaderboardBtn = document.getElementById('showLeaderboardBtn');
-  const scoreboard = document.getElementById('scoreboard');
-  const scoreTableBody = document.getElementById('scoreTableBody');
-  const backBtn = document.getElementById('backBtn');
-
-  startBtn.onclick = () => {
-    player = playerNameInput.value.trim();
-    if (!player) {
-      alert("กรุณาใส่ชื่อก่อนเริ่มเกม");
-      return;
-    }
-    startScreen.style.display = "none";
-    questionScreen.style.display = "block";
-    current = 0;
-    score = 0;
-    showQuestion();
-  };
-
-  function showQuestion() {
-    const q = questions[current];
-    questionText.textContent = q.text;
-    choicesDiv.innerHTML = "";
-    q.choices.forEach(choice => {
-      const btn = document.createElement("button");
-      btn.textContent = choice.text;
-      btn.onclick = () => {
-        score += choice.score;
-        current++;
-        if (current < questions.length) {
-          showQuestion();
-        } else {
-          endGame();
-        }
-      };
-      choicesDiv.appendChild(btn);
-    });
-  }
-
-  function endGame() {
-    questionScreen.style.display = "none";
-    resultScreen.style.display = "block";
-    finalScoreSpan.textContent = score;
-
-    google.script.run.withSuccessHandler(() => {
-      console.log("ส่งคะแนนสำเร็จ");
-    }).withFailureHandler(() => {
-      alert("ส่งคะแนนล้มเหลว");
-    }).submitScore(player, score);
-  }
-
-  showLeaderboardBtn.onclick = () => {
-    resultScreen.style.display = "none";
-    scoreboard.style.display = "block";
-    google.script.run.withSuccessHandler((data) => {
-      scoreTableBody.innerHTML = "";
-      data.forEach(row => {
-        const tr = document.createElement("tr");
-        const date = new Date(row.timestamp);
-        tr.innerHTML = `<td>${row.name}</td><td>${row.score}</td><td>${date.toLocaleString('th-TH')}</td>`;
-        scoreTableBody.appendChild(tr);
+      const score = Math.floor(Math.random() * 10); // สมมุติคะแนน
+      const payload = new URLSearchParams({
+        action: 'submit',
+        name: name,
+        score: score,
+        date: new Date().toISOString()
       });
-    }).withFailureHandler(() => {
-      alert("โหลดคะแนนล้มเหลว");
-    }).getScores();
-  };
 
-  backBtn.onclick = () => {
-    scoreboard.style.display = "none";
-    resultScreen.style.display = "none";
-    questionScreen.style.display = "none";
-    startScreen.style.display = "block";
-    playerNameInput.value = "";
-  };
-</script>
+      fetch(scriptURL, {
+        method: 'POST',
+        body: payload
+      })
+      .then(res => res.text())
+      .then(txt => {
+        alert("✅ ส่งคะแนนสำเร็จ: " + score);
+        loadLeaderboard();
+      })
+      .catch(err => {
+        console.error("ส่งคะแนนล้มเหลว:", err);
+        alert("❌ เกิดข้อผิดพลาดในการส่งคะแนน");
+      });
+    }
 
+    function loadLeaderboard() {
+      fetch(scriptURL + '?action=scorelist')
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.getElementById("scoreBody");
+          tbody.innerHTML = "";
+          data.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `<td>${row.name}</td><td>${row.score}</td><td>${row.date}</td>`;
+            tbody.appendChild(tr);
+          });
+        })
+        .catch(err => {
+          console.error("โหลดคะแนนล้มเหลว:", err);
+          document.getElementById("scoreBody").innerHTML = "<tr><td colspan='3'>❌ โหลดคะแนนล้มเหลว</td></tr>";
+        });
+    }
+
+    // โหลดตารางเมื่อเปิดหน้า
+    loadLeaderboard();
+  </script>
 </body>
 </html>
