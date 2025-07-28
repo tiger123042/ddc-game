@@ -1,130 +1,205 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<title>เกมจัดหมู่หนังสือ DDC</title>
-<style>
-  /* ใส่ CSS ที่ต้องการ */
-</style>
+  <meta charset="UTF-8" />
+  <title>เกมจัดหมู่หนังสือ DDC</title>
+  <style>
+    body {
+      font-family: 'Prompt', sans-serif;
+      background: linear-gradient(to top right, #ffe8ec, #dbeafe);
+      padding: 20px;
+      color: #333;
+    }
+    #game-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #d63384;
+    }
+    input, button {
+      font-size: 1.1em;
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #d63384;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #a10f57;
+    }
+    .question {
+      font-size: 1.2em;
+      margin: 20px 0;
+    }
+    #choices button {
+      width: 100%;
+      margin: 5px 0;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+      background: #a5d8ff;
+      color: #333;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #choices button:hover {
+      background: #339af0;
+      color: white;
+    }
+    #scoreboard {
+      margin-top: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background: #e0a7ca;
+      color: #4b004b;
+    }
+  </style>
 </head>
 <body>
 
-<div id="game">
-  <input type="text" id="playerName" placeholder="ใส่ชื่อนักเรียน" />
-  <button id="startBtn">เริ่มเล่น</button>
+<div id="game-container">
+  <h1>เกมจัดหมู่หนังสือ DDC</h1>
 
-  <div id="questionSection" style="display:none;">
-    <div id="questionText"></div>
+  <div id="start-screen">
+    <input type="text" id="playerName" placeholder="ใส่ชื่อนักเรียน" />
+    <button id="startBtn">เริ่มเล่น</button>
+  </div>
+
+  <div id="question-screen" style="display:none;">
+    <div class="question" id="questionText"></div>
     <div id="choices"></div>
   </div>
 
-  <div id="resultSection" style="display:none;">
-    <div>คะแนนของคุณ: <span id="score"></span></div>
+  <div id="result-screen" style="display:none;">
+    <h2>คะแนนของคุณ: <span id="finalScore"></span> / 9</h2>
     <button id="showLeaderboardBtn">ดูตารางคะแนน</button>
+  </div>
+
+  <div id="scoreboard" style="display:none;">
+    <h2>ตารางคะแนนนักเรียน</h2>
+    <table>
+      <thead><tr><th>ชื่อ</th><th>คะแนน</th><th>เวลา</th></tr></thead>
+      <tbody id="scoreTableBody"></tbody>
+    </table>
+    <button id="backBtn">เล่นใหม่</button>
   </div>
 </div>
 
-<div id="leaderboard" style="display:none;">
-  <h2>ตารางคะแนน</h2>
-  <table border="1" id="scoreTable">
-    <thead><tr><th>ชื่อ</th><th>คะแนน</th><th>เวลา</th></tr></thead>
-    <tbody></tbody>
-  </table>
-  <button id="backBtn">กลับเล่นใหม่</button>
-</div>
-
 <script>
-const questions = [
-  { text: "หนังสือเลขหมู่ 300 คือหมวดอะไร?", choices: [{text:"ศิลปะ", score:0},{text:"สังคมศาสตร์", score:3},{text:"วิทยาศาสตร์", score:0}] },
-  { text: "ถ้าฉันอยากเรียนเรื่องจักรวาล ต้องหาที่หมวดไหน?", choices: [{text:"520", score:3},{text:"920", score:0},{text:"320", score:0}] },
-  { text: "หนังสือ 641 นี่เกี่ยวกับอะไร?", choices: [{text:"การทำอาหาร", score:3},{text:"กีฬา", score:0},{text:"แฟชั่น", score:0}] }
-];
+  const questions = [
+    { text: "หนังสือเลขหมู่ 300 คือหมวดอะไร?", choices: [{text:"ศิลปะ", score:0},{text:"สังคมศาสตร์", score:3},{text:"วิทยาศาสตร์", score:0}] },
+    { text: "ถ้าฉันอยากเรียนเรื่องจักรวาล ต้องหาที่หมวดไหน?", choices: [{text:"520", score:3},{text:"920", score:0},{text:"320", score:0}] },
+    { text: "หนังสือ 641 นี่เกี่ยวกับอะไร?", choices: [{text:"การทำอาหาร", score:3},{text:"กีฬา", score:0},{text:"แฟชั่น", score:0}] }
+  ];
 
-let currentQuestion = 0;
-let score = 0;
-let playerName = "";
+  let current = 0;
+  let score = 0;
+  let player = "";
 
-const startBtn = document.getElementById('startBtn');
-const playerNameInput = document.getElementById('playerName');
-const questionSection = document.getElementById('questionSection');
-const questionText = document.getElementById('questionText');
-const choicesDiv = document.getElementById('choices');
-const resultSection = document.getElementById('resultSection');
-const scoreSpan = document.getElementById('score');
-const showLeaderboardBtn = document.getElementById('showLeaderboardBtn');
-const leaderboardDiv = document.getElementById('leaderboard');
-const scoreTableBody = document.querySelector('#scoreTable tbody');
-const backBtn = document.getElementById('backBtn');
+  const startBtn = document.getElementById('startBtn');
+  const playerNameInput = document.getElementById('playerName');
+  const startScreen = document.getElementById('start-screen');
+  const questionScreen = document.getElementById('question-screen');
+  const questionText = document.getElementById('questionText');
+  const choicesDiv = document.getElementById('choices');
+  const resultScreen = document.getElementById('result-screen');
+  const finalScoreSpan = document.getElementById('finalScore');
+  const showLeaderboardBtn = document.getElementById('showLeaderboardBtn');
+  const scoreboard = document.getElementById('scoreboard');
+  const scoreTableBody = document.getElementById('scoreTableBody');
+  const backBtn = document.getElementById('backBtn');
 
-startBtn.onclick = () => {
-  playerName = playerNameInput.value.trim();
-  if(!playerName) {
-    alert("กรุณาใส่ชื่อก่อนเริ่มเกม");
-    return;
-  }
-  startBtn.style.display = 'none';
-  playerNameInput.style.display = 'none';
-  questionSection.style.display = 'block';
-  currentQuestion = 0;
-  score = 0;
-  showQuestion();
-};
+  startBtn.onclick = () => {
+    player = playerNameInput.value.trim();
+    if (!player) {
+      alert("กรุณาใส่ชื่อก่อนเริ่มเกม");
+      return;
+    }
+    startScreen.style.display = "none";
+    questionScreen.style.display = "block";
+    current = 0;
+    score = 0;
+    showQuestion();
+  };
 
-function showQuestion() {
-  const q = questions[currentQuestion];
-  questionText.textContent = q.text;
-  choicesDiv.innerHTML = '';
-  q.choices.forEach(choice => {
-    const btn = document.createElement('button');
-    btn.textContent = choice.text;
-    btn.onclick = () => {
-      score += choice.score;
-      currentQuestion++;
-      if(currentQuestion < questions.length) {
-        showQuestion();
-      } else {
-        endGame();
-      }
-    };
-    choicesDiv.appendChild(btn);
-  });
-}
-
-function endGame() {
-  questionSection.style.display = 'none';
-  resultSection.style.display = 'block';
-  scoreSpan.textContent = score;
-  google.script.run.withSuccessHandler(() => {
-    console.log("ส่งคะแนนสำเร็จ");
-  }).withFailureHandler(() => {
-    alert("ส่งคะแนนล้มเหลว");
-  }).submitScore(playerName, score);
-}
-
-showLeaderboardBtn.onclick = () => {
-  resultSection.style.display = 'none';
-  leaderboardDiv.style.display = 'block';
-  google.script.run.withSuccessHandler((data) => {
-    scoreTableBody.innerHTML = '';
-    data.forEach(row => {
-      const tr = document.createElement('tr');
-      const date = new Date(row.timestamp);
-      tr.innerHTML = `<td>${row.name}</td><td>${row.score}</td><td>${date.toLocaleString('th-TH')}</td>`;
-      scoreTableBody.appendChild(tr);
+  function showQuestion() {
+    const q = questions[current];
+    questionText.textContent = q.text;
+    choicesDiv.innerHTML = "";
+    q.choices.forEach(choice => {
+      const btn = document.createElement("button");
+      btn.textContent = choice.text;
+      btn.onclick = () => {
+        score += choice.score;
+        current++;
+        if (current < questions.length) {
+          showQuestion();
+        } else {
+          endGame();
+        }
+      };
+      choicesDiv.appendChild(btn);
     });
-  }).withFailureHandler(() => {
-    alert("โหลดคะแนนล้มเหลว");
-  }).getScores();
-};
+  }
 
-backBtn.onclick = () => {
-  leaderboardDiv.style.display = 'none';
-  resultSection.style.display = 'none';
-  questionSection.style.display = 'none';
-  playerNameInput.style.display = 'inline-block';
-  startBtn.style.display = 'inline-block';
-  playerNameInput.value = '';
-};
+  function endGame() {
+    questionScreen.style.display = "none";
+    resultScreen.style.display = "block";
+    finalScoreSpan.textContent = score;
+
+    google.script.run.withSuccessHandler(() => {
+      console.log("ส่งคะแนนสำเร็จ");
+    }).withFailureHandler(() => {
+      alert("ส่งคะแนนล้มเหลว");
+    }).submitScore(player, score);
+  }
+
+  showLeaderboardBtn.onclick = () => {
+    resultScreen.style.display = "none";
+    scoreboard.style.display = "block";
+    google.script.run.withSuccessHandler((data) => {
+      scoreTableBody.innerHTML = "";
+      data.forEach(row => {
+        const tr = document.createElement("tr");
+        const date = new Date(row.timestamp);
+        tr.innerHTML = `<td>${row.name}</td><td>${row.score}</td><td>${date.toLocaleString('th-TH')}</td>`;
+        scoreTableBody.appendChild(tr);
+      });
+    }).withFailureHandler(() => {
+      alert("โหลดคะแนนล้มเหลว");
+    }).getScores();
+  };
+
+  backBtn.onclick = () => {
+    scoreboard.style.display = "none";
+    resultScreen.style.display = "none";
+    questionScreen.style.display = "none";
+    startScreen.style.display = "block";
+    playerNameInput.value = "";
+  };
 </script>
 
 </body>
