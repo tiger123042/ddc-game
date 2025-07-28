@@ -1,83 +1,188 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <title>เกมจัดหมู่หนังสือ</title>
-  <style>
-    body { font-family: 'Kanit', sans-serif; text-align: center; background: #fef9f4; color: #333; }
-    #leaderboard { margin-top: 30px; }
-    table { margin: auto; border-collapse: collapse; width: 80%; max-width: 600px; background: #fff; box-shadow: 0 0 10px #ccc; }
-    th, td { padding: 10px; border: 1px solid #ddd; }
-    th { background-color: #ffc107; }
-  </style>
+<meta charset="UTF-8" />
+<title>เกมจัดหมู่หนังสือ DDC พร้อม Leaderboard</title>
+<style>
+  body { font-family: Arial, sans-serif; padding: 20px; background: #f0f4f8; }
+  #game, #scoreboard { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px #aaa; }
+  h1 { text-align: center; color: #c71585; }
+  .question { margin: 20px 0; font-size: 1.2em; }
+  button { padding: 10px 15px; margin: 5px 0; width: 100%; border-radius: 8px; border: none; background: #c71585; color: white; font-size: 1em; cursor: pointer; }
+  button:hover { background: #a50f6f; }
+  #scoreboard table { width: 100%; border-collapse: collapse; margin-top: 20px;}
+  #scoreboard th, #scoreboard td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+  #scoreboard th { background: #e0a7ca; color: #4b004b; }
+</style>
 </head>
 <body>
-  <h1>🏆 กระดานคะแนน</h1>
-  <form id="scoreForm">
-    <input type="text" id="name" placeholder="ชื่อของคุณ" required>
-    <input type="number" id="score" placeholder="คะแนน" required>
-    <button type="submit">ส่งคะแนน</button>
-  </form>
 
-  <div id="leaderboard">
-    <h2>รายชื่อผู้เล่น</h2>
-    <table>
-      <thead>
-        <tr><th>ชื่อ</th><th>คะแนน</th><th>วันที่</th></tr>
-      </thead>
-      <tbody id="scoreList"></tbody>
-    </table>
+<div id="game">
+  <h1>เกมจัดหมู่หนังสือ DDC</h1>
+  <div id="start-screen">
+    <input type="text" id="playerName" placeholder="ใส่ชื่อนักเรียน" />
+    <button id="startBtn">เริ่มเล่น</button>
   </div>
 
-  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyPgiXlPjAO_Y6kZ6MtpVRKbWBxsPPD7E0MJBn7IEUG0uCIhtr_Yekm215E2OUlc_LcRg/exec";
+  <div id="question-screen" style="display:none;">
+    <div class="question" id="questionText"></div>
+    <div id="choices"></div>
+  </div>
 
-    // โหลดรายชื่อ
-    function loadScores() {
-      fetch(`${scriptURL}?action=scorelist`)
-        .then(response => response.json())
-        .then(data => {
-          const tbody = document.getElementById("scoreList");
-          tbody.innerHTML = "";
-          data.sort((a, b) => b.score - a.score).forEach(row => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${row.name}</td><td>${row.score}</td><td>${new Date(row.date).toLocaleString()}</td>`;
-            tbody.appendChild(tr);
-          });
-        })
-        .catch(error => {
-          console.error("โหลดคะแนนล้มเหลว:", error);
+  <div id="result-screen" style="display:none;">
+    <h2>คะแนนของคุณ: <span id="finalScore"></span> / 9</h2>
+    <button id="showScoresBtn">ดูคะแนนรวมทั้งหมด</button>
+  </div>
+</div>
+
+<div id="scoreboard" style="display:none;">
+  <h1>ตารางคะแนนนักเรียน</h1>
+  <table>
+    <thead><tr><th>เวลา</th><th>ชื่อ</th><th>คะแนน</th></tr></thead>
+    <tbody id="scoreTableBody"></tbody>
+  </table>
+  <button id="backBtn">กลับเล่นใหม่</button>
+</div>
+
+<script>
+const questions = [
+  {
+    text: "หนังสือเลขหมู่ 300 คือหมวดอะไรเหรอ?",
+    choices: [
+      { text: "ศิลปะ", score: 0 },
+      { text: "สังคมศาสตร์", score: 3 },
+      { text: "วิทยาศาสตร์", score: 0 }
+    ]
+  },
+  {
+    text: "ถ้าฉันอยากเรียนเรื่องจักรวาล ต้องหาที่หมวดไหน?",
+    choices: [
+      { text: "520", score: 3 },
+      { text: "920", score: 0 },
+      { text: "320", score: 0 }
+    ]
+  },
+  {
+    text: "หนังสือ 641 นี่เกี่ยวกับอะไรนะ?",
+    choices: [
+      { text: "การทำอาหาร", score: 3 },
+      { text: "กีฬา", score: 0 },
+      { text: "แฟชั่น", score: 0 }
+    ]
+  }
+];
+
+let current = 0;
+let score = 0;
+let player = "";
+
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyw7UgOkjKqU62hrt1TQIk1U_AR_KEKdi0yb5mooPnraPOdWHYth7YKEV6Fu8rZXKIX/exec";
+
+const startBtn = document.getElementById("startBtn");
+const playerNameInput = document.getElementById("playerName");
+const startScreen = document.getElementById("start-screen");
+const questionScreen = document.getElementById("question-screen");
+const questionText = document.getElementById("questionText");
+const choicesDiv = document.getElementById("choices");
+const resultScreen = document.getElementById("result-screen");
+const finalScoreSpan = document.getElementById("finalScore");
+const showScoresBtn = document.getElementById("showScoresBtn");
+const scoreboard = document.getElementById("scoreboard");
+const scoreTableBody = document.getElementById("scoreTableBody");
+const backBtn = document.getElementById("backBtn");
+
+startBtn.onclick = () => {
+  player = playerNameInput.value.trim();
+  if (!player) {
+    alert("กรุณาใส่ชื่อนักเรียนก่อนเริ่มเกม");
+    return;
+  }
+  startScreen.style.display = "none";
+  questionScreen.style.display = "block";
+  current = 0;
+  score = 0;
+  showQuestion();
+};
+
+function showQuestion() {
+  const q = questions[current];
+  questionText.textContent = q.text;
+  choicesDiv.innerHTML = "";
+  q.choices.forEach(choice => {
+    const btn = document.createElement("button");
+    btn.textContent = choice.text;
+    btn.onclick = () => {
+      score += choice.score;
+      current++;
+      if (current < questions.length) {
+        showQuestion();
+      } else {
+        endGame();
+      }
+    };
+    choicesDiv.appendChild(btn);
+  });
+}
+
+function endGame() {
+  questionScreen.style.display = "none";
+  resultScreen.style.display = "block";
+  finalScoreSpan.textContent = score;
+
+  // ส่งคะแนนไป Google Sheet
+  fetch(`${WEBAPP_URL}?action=submit&name=${encodeURIComponent(player)}&score=${score}`)
+    .then(res => res.text())
+    .then(text => {
+      try {
+        const data = JSON.parse(text);
+        if (!data.success) {
+          alert("ส่งคะแนนล้มเหลว");
+        }
+      } catch {
+        alert("ส่งคะแนนล้มเหลว: Response ไม่ถูกต้อง");
+      }
+    })
+    .catch(err => alert("ส่งคะแนนล้มเหลว: " + err));
+}
+
+showScoresBtn.onclick = () => {
+  fetch(`${WEBAPP_URL}?action=scorelist`)
+    .then(res => res.text())
+    .then(text => {
+      try {
+        const data = JSON.parse(text);
+        if (data.error) {
+          alert("โหลดคะแนนล้มเหลว: " + data.error);
+          return;
+        }
+        scoreTableBody.innerHTML = "";
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          const date = new Date(row.timestamp);
+          tr.innerHTML = `
+            <td>${date.toLocaleString('th-TH')}</td>
+            <td>${row.name}</td>
+            <td>${row.score}</td>
+          `;
+          scoreTableBody.appendChild(tr);
         });
-    }
+        document.getElementById("game").style.display = "none";
+        scoreboard.style.display = "block";
+      } catch {
+        alert("โหลดคะแนนล้มเหลว: Response ไม่ถูกต้อง");
+      }
+    })
+    .catch(err => alert("โหลดคะแนนล้มเหลว: " + err));
+};
 
-    // ส่งคะแนน
-    document.getElementById("scoreForm").addEventListener("submit", e => {
-      e.preventDefault();
-      const name = document.getElementById("name").value;
-      const score = document.getElementById("score").value;
+backBtn.onclick = () => {
+  scoreboard.style.display = "none";
+  document.getElementById("game").style.display = "block";
+  resultScreen.style.display = "none";
+  startScreen.style.display = "block";
+  playerNameInput.value = "";
+};
+</script>
 
-      const formData = new FormData();
-      formData.append("action", "submit");
-      formData.append("name", name);
-      formData.append("score", score);
-
-      fetch(scriptURL, {
-        method: "POST",
-        body: formData,
-      })
-      .then(res => res.json())
-      .then(result => {
-        alert("✅ ส่งคะแนนสำเร็จ!");
-        loadScores();
-      })
-      .catch(error => {
-        console.error("❌ ส่งคะแนนล้มเหลว:", error);
-        alert("เกิดข้อผิดพลาดในการส่งคะแนน");
-      });
-    });
-
-    // โหลดคะแนนเมื่อเปิดหน้า
-    loadScores();
-  </script>
 </body>
 </html>
