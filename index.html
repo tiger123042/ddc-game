@@ -1,401 +1,214 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>เกมจีบสาว - จัดหมู่หนังสือ DDC</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
-  body {
-    margin: 0;
-    font-family: 'Kanit', sans-serif;
-    background: #fef6e4 url('https://cdn.pixabay.com/photo/2016/11/29/10/07/notebook-1869347_1280.jpg') no-repeat center center fixed;
-    background-size: cover;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    overflow: hidden;
-    color: #3b2f2f;
-  }
-  h1 {
-    margin: 20px;
-    color: #d6336c;
-    text-shadow: 1px 1px 2px #fff;
-    font-size: 2.4rem;
-    text-align: center;
-  }
-  #game-container {
-    width: 90%;
-    max-width: 700px;
-    height: 70vh;
-    background: #fff8f0;
-    border-radius: 25px;
-    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-  }
-  #game-container::before {
-    content: "";
-    position: absolute;
-    top: 10px; bottom: 10px; left: 10px; right: 10px;
-    border: 3px dashed #d18ca4;
-    border-radius: 25px;
-    pointer-events: none;
-    mix-blend-mode: multiply;
-    opacity: 0.3;
-  }
-  #dialog-box {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 18px 22px 18px 120px;
-    font-size: 1.15rem;
-    line-height: 1.6;
-    max-height: 45%;
-    overflow-y: auto;
-    box-shadow: inset 0 0 8px #d6336c33;
-    position: relative;
-    color: #4b2e49;
-    transition: background-color 0.3s ease;
-  }
-  .speaker {
-    font-weight: bold;
-    color: #d6336c;
-    margin-bottom: 6px;
-  }
-  #choices {
-    margin-top: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-    z-index: 10;
-  }
-  #choices button {
-    flex: 1 1 45%;
-    background: #d6336c;
-    color: #fff;
-    border: none;
-    border-radius: 16px;
-    padding: 14px;
-    font-size: 1.05rem;
-    cursor: pointer;
-    transition: background 0.25s;
-    box-shadow: 0 4px 8px #d6336c88;
-  }
-  #choices button:hover:not(:disabled) {
-    background: #a6284a;
-    box-shadow: 0 6px 12px #a6284aaa;
-  }
-  #choices button:disabled {
-    background: #ccc;
-    color: #666;
-    cursor: default;
-    box-shadow: none;
-  }
-  #score-display {
-    margin-top: 14px;
-    font-weight: 700;
-    text-align: center;
-    font-size: 1.3rem;
-    color: #d6336c;
-    text-shadow: 1px 1px 3px #fff;
-    min-height: 30px;
-    user-select: none;
-  }
-  /* ภาพมายด์ การ์ตูน ตัวละครด้านซ้าย */
-  #character-img {
-    position: absolute;
-    top: 20px;
-    left: 15px;
-    width: 90px;
-    height: 120px;
-    border-radius: 15px;
-    box-shadow: 0 6px 12px rgba(214,51,108,0.5);
-    object-fit: contain;
-    user-select: none;
-    pointer-events: none;
-    z-index: 20;
-    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
-    background: #fff0;
-  }
-  /* หน้าจอกรอกชื่อ */
-  #start-screen {
-    position: fixed;
-    top:0; left:0; right:0; bottom:0;
-    background: rgba(255, 255, 255, 0.95);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 50;
-    font-size: 1.2rem;
-    color: #6b3a54;
-    padding: 20px;
-  }
-  #start-screen h2 {
-    margin-bottom: 16px;
-    color: #d6336c;
-    font-size: 2rem;
-    text-shadow: 1px 1px 2px #fff;
-  }
-  #player-name-input {
-    font-size: 1.2rem;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 2px solid #d6336c;
-    width: 280px;
-    text-align: center;
-    outline-color: #a6284a;
-    margin-bottom: 20px;
-  }
-  #start-btn {
-    background: #d6336c;
-    border: none;
-    border-radius: 16px;
-    padding: 14px 30px;
-    font-size: 1.15rem;
-    color: white;
-    cursor: pointer;
-    box-shadow: 0 5px 10px #d6336cbb;
-    transition: background 0.3s;
-  }
-  #start-btn:hover {
-    background: #a6284a;
-    box-shadow: 0 7px 14px #a6284aaa;
-  }
-  /* อนิเมชันกะพริบสีเขียวและแดง */
-  @keyframes correctFlash {
-    0%, 100% { background-color: rgba(144,238,144, 0.3); }
-    50% { background-color: rgba(34,139,34, 0.6); }
-  }
-  @keyframes wrongFlash {
-    0%, 100% { background-color: rgba(255,182,193, 0.3); }
-    50% { background-color: rgba(220,20,60, 0.6); }
-  }
-  @media (max-width: 600px) {
-    #choices button {
-      flex: 1 1 100%;
+  <meta charset="UTF-8">
+  <title>เกมจัดหมู่หนังสือ DDC</title>
+  <style>
+    body {
+      font-family: "Prompt", sans-serif;
+      background: linear-gradient(to bottom right, #e0f7fa, #fce4ec);
+      color: #333;
+      text-align: center;
+      padding: 20px;
     }
-    #dialog-box {
-      padding-left: 100px;
+
+    .game-container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    #character-img {
-      width: 70px;
-      height: 100px;
-      top: 12px;
-      left: 10px;
+
+    .character {
+      width: 150px;
+      border-radius: 12px;
+      margin-bottom: 10px;
     }
-  }
-</style>
+
+    .question {
+      font-size: 1.4rem;
+      margin: 20px 0;
+    }
+
+    .choices button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 12px;
+      font-size: 1.1rem;
+      border-radius: 12px;
+      border: none;
+      background-color: #f8bbd0;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .choices button:hover {
+      background-color: #f06292;
+      color: white;
+    }
+
+    .response {
+      font-size: 1.2rem;
+      margin-top: 15px;
+      min-height: 40px;
+    }
+
+    .score {
+      font-size: 1.4rem;
+      margin-top: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1.1rem;
+      width: 60%;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button.start-btn {
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      border-radius: 8px;
+      background-color: #4dd0e1;
+      color: white;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .start-screen {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
 <body>
-<h1>📚 จีบมายด์ & จัดหมู่หนังสือ DDC</h1>
+  <div class="game-container">
+    <img src="https://cdn.pixabay.com/photo/2021/05/15/11/00/girl-6255532_1280.jpg" alt="มายด์" class="character" />
+    <div class="start-screen">
+      <h2>ยินดีต้อนรับสู่เกมจัดหมู่หนังสือ DDC 📚</h2>
+      <p>กรุณาใส่ชื่อนักเรียนก่อนเริ่มเกม:</p>
+      <input type="text" id="playerNameInput" placeholder="ชื่อนักเรียน" />
+      <br>
+      <button onclick="startGame()" class="start-btn">เริ่มเกม</button>
+    </div>
 
-<div id="game-container" aria-live="polite" aria-atomic="true">
-  <img id="character-img" 
-    src="https://cdn.pixabay.com/photo/2021/05/15/11/00/girl-6255532_1280.jpg" 
-    alt="มายด์ ตัวละครการ์ตูนหญิงใส่แว่น" draggable="false" />
-  <div id="dialog-box" role="region" aria-label="ข้อความสนทนา"></div>
-  <div id="choices" role="list"></div>
-  <div id="score-display" aria-live="polite" aria-atomic="true">คะแนน: 0</div>
-</div>
+    <div id="quizContainer" style="display:none;">
+      <div class="question" id="questionText">คำถามจะอยู่ตรงนี้</div>
+      <div class="choices" id="choicesContainer"></div>
+      <div class="response" id="responseText"></div>
+      <div class="score" id="scoreText">คะแนน: 0</div>
+    </div>
 
-<div id="start-screen" role="dialog" aria-modal="true" aria-labelledby="start-title">
-  <h2 id="start-title">กรุณากรอกชื่อของคุณก่อนเริ่มเกม</h2>
-  <input type="text" id="player-name-input" placeholder="ชื่อของคุณ..." aria-required="true" autocomplete="off" />
-  <button id="start-btn" aria-label="เริ่มเกม">เริ่มเกม</button>
-</div>
+    <div id="endScreen" style="display:none;">
+      <h2>🎉 จบเกมแล้ว! 🎉</h2>
+      <p id="finalScore"></p>
+    </div>
+  </div>
 
-<script>
-  const dialogBox = document.getElementById('dialog-box');
-  const choicesBox = document.getElementById('choices');
-  const scoreDisplay = document.getElementById('score-display');
-  const gameContainer = document.getElementById('game-container');
-  const startScreen = document.getElementById('start-screen');
-  const playerNameInput = document.getElementById('player-name-input');
-  const startBtn = document.getElementById('start-btn');
+  <script>
+    const questions = [
+      {
+        question: "หนังสือเลขหมู่ 300 คือหมวดใด?",
+        choices: [
+          { text: "เทคโนโลยี", correct: false },
+          { text: "ศาสนา", correct: false },
+          { text: "สังคมศาสตร์", correct: true },
+          { text: "วรรณกรรม", correct: false }
+        ],
+        correctResponse: "เก่งมาก! มายด์ชอบความรู้ของเธอ 😊",
+        wrongResponse: "ยังไม่ใช่น้า~ ลองใหม่นะ 💡"
+      },
+      {
+        question: "000 ใน DDC คือหมวดอะไร?",
+        choices: [
+          { text: "คอมพิวเตอร์และข้อมูลทั่วไป", correct: true },
+          { text: "ศิลปะ", correct: false },
+          { text: "ภาษา", correct: false },
+          { text: "วิทยาศาสตร์", correct: false }
+        ],
+        correctResponse: "สุดยอด! เธอเข้าใจดีมากเลย 💻📘",
+        wrongResponse: "โอ๊ะ! ยังไม่ใช่ ลองทบทวนใหม่นะ 📚"
+      },
+      {
+        question: "ถ้าจัดหนังสือผิดหมวดจะเกิดอะไรขึ้น?",
+        choices: [
+          { text: "หาหนังสือไม่เจอ", correct: true },
+          { text: "หนังสือจะหายไปเลย", correct: false },
+          { text: "ไม่มีปัญหา", correct: false },
+          { text: "หมวดจะซ่อมตัวเอง", correct: false }
+        ],
+        correctResponse: "เยี่ยมไปเลย! แบบนี้มายด์ปลื้มมาก 💘",
+        wrongResponse: "ไม่ใช่นะ ลองคิดใหม่อีกครั้งน้า~"
+      }
+    ];
 
-  let playerName = '';
-  let currentStage = 0;
-  let dialogIndex = 0;
-  let score = 0;
+    let currentQuestion = 0;
+    let score = 0;
+    let playerName = "";
 
-  const stages = [
-    {
-      bg: "https://cdn.pixabay.com/photo/2017/06/22/20/10/library-2438624_960_720.png",
-      dialog: [
-        {speaker: "มายด์", text: "ไง~ ยินดีต้อนรับสู่โลกแห่งการจัดหนังสือนะ 💕"},
-        {speaker: "มายด์", text: "เราจะเริ่มด้วยคำถามเบาๆก่อนนะ พร้อมหรือยัง? 😊"}
-      ],
-      question: "ทำไมเราต้องจัดหมู่หนังสือในห้องสมุดด้วยล่ะ?",
-      choices: [
-        {text: "เพื่อให้ค้นหาหนังสือได้ง่ายและรวดเร็ว", correct: true},
-        {text: "เพราะอยากให้ห้องสมุดดูมีสีสัน", correct: false},
-        {text: "เพราะจะทำให้หนังสือหายากขึ้น", correct: false},
-        {text: "เพราะเป็นแฟชั่นใหม่ของห้องสมุด", correct: false}
-      ],
-      correctResponse: "ใช่เลย! แบบนี้ฉันชอบ 💖",
-      wrongResponse: "เอ๊ะ... ลองคิดอีกทีน้า~"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2016/04/01/11/53/library-1300226_960_720.png",
-      dialog: [
-        {speaker: "มายด์", text: "ต่อไป... ถ้าจำไม่ผิด หมวด 500 คือ...? 🤔"}
-      ],
-      question: "หมวด 500 ในระบบ DDC คือเรื่องอะไร?",
-      choices: [
-        {text: "วิทยาศาสตร์และธรรมชาติ", correct: true},
-        {text: "การเมือง", correct: false},
-        {text: "ประวัติศาสตร์", correct: false},
-        {text: "เทคโนโลยี", correct: false}
-      ],
-      correctResponse: "เก่งมากเลย! ฉันปลื้มสุดๆ 😳",
-      wrongResponse: "อุ๊ย ไม่ใช่นะ ลองใหม่นะ~"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2017/08/10/07/52/lecture-2618495_960_720.jpg",
-      dialog: [
-        {speaker: "มายด์", text: "แล้วถ้าไม่มีระบบ DDC จะเกิดอะไรขึ้นน้า? 🧐"}
-      ],
-      question: "เหตุผลที่ต้องใช้ระบบ DDC คืออะไร?",
-      choices: [
-        {text: "เพื่อให้ค้นหาง่ายและจัดเก็บสะดวก", correct: true},
-        {text: "เพื่อให้หนังสือราคาสูงขึ้น", correct: false},
-        {text: "เพื่อให้หนังสืออ่านยากขึ้น", correct: false},
-        {text: "เพราะครูสั่งมา", correct: false}
-      ],
-      correctResponse: "ตอบดีมากเลย~ นี่แหละคนที่เข้าใจฉัน 😍",
-      wrongResponse: "อื้ม... ไม่ใช่แน่ๆ ลองดูดีๆอีกทีนะ"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2016/03/27/19/50/book-1281583_960_720.jpg",
-      dialog: [
-        {speaker: "มายด์", text: "สุดท้ายแล้วจ้า~ 💫 ถ้าเธอตอบได้ เราอาจจะไปอ่านหนังสือด้วยกันก็ได้นะ~"}
-      ],
-      question: "หมวด 700 ของ DDC คืออะไร?",
-      choices: [
-        {text: "ศิลปะและการออกแบบ", correct: true},
-        {text: "กฎหมาย", correct: false},
-        {text: "วิทยาศาสตร์", correct: false},
-        {text: "สุขภาพ", correct: false}
-      ],
-      correctResponse: "ว้าว~ เธอนี่แหละคู่หูอ่านหนังสือในฝันของฉันเลย 😘",
-      wrongResponse: "อือ... ไม่ใช่นะ ลองตอบใหม่สิจ๊ะ"
-    }
-  ];
+    const questionText = document.getElementById("questionText");
+    const choicesContainer = document.getElementById("choicesContainer");
+    const responseText = document.getElementById("responseText");
+    const scoreText = document.getElementById("scoreText");
+    const playerNameInput = document.getElementById("playerNameInput");
+    const quizContainer = document.getElementById("quizContainer");
+    const startScreen = document.querySelector(".start-screen");
+    const endScreen = document.getElementById("endScreen");
+    const finalScore = document.getElementById("finalScore");
 
-  function setBackground(url) {
-    gameContainer.style.backgroundImage = `url(${url})`;
-  }
-
-  function updateScore() {
-    scoreDisplay.textContent = `คะแนน: ${score}`;
-  }
-
-  function clearChoices() {
-    choicesBox.innerHTML = "";
-  }
-
-  function disableChoices() {
-    choicesBox.querySelectorAll("button").forEach(btn => btn.disabled = true);
-  }
-
-  function showFeedback(correct) {
-    if(correct) {
-      dialogBox.style.animation = 'correctFlash 0.6s';
-    } else {
-      dialogBox.style.animation = 'wrongFlash 0.6s';
-    }
-    dialogBox.addEventListener('animationend', () => {
-      dialogBox.style.animation = '';
-    }, { once: true });
-  }
-
-  function showDialog() {
-    const stage = stages[currentStage];
-    if (dialogIndex < stage.dialog.length) {
-      const line = stage.dialog[dialogIndex];
-      dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
-      dialogIndex++;
-      setTimeout(showDialog, 1600);
-    } else {
+    function startGame() {
+      playerName = playerNameInput.value.trim();
+      if (!playerName) return alert("กรุณาใส่ชื่อนักเรียนก่อนนะจ๊ะ!");
+      startScreen.style.display = "none";
+      quizContainer.style.display = "block";
+      currentQuestion = 0;
+      score = 0;
       showQuestion();
     }
-  }
 
-  function showQuestion() {
-    const stage = stages[currentStage];
-    dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
-    clearChoices();
-    stage.choices.forEach((choice) => {
-      const btn = document.createElement("button");
-      btn.textContent = choice.text;
-      btn.onclick = () => {
-        disableChoices();
-        if (choice.correct) {
-          score += 10;
-          updateScore();
-          showFeedback(true);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
-          setTimeout(nextStage, 2000);
+    function showQuestion() {
+      const q = questions[currentQuestion];
+      questionText.textContent = q.question;
+      choicesContainer.innerHTML = "";
+      responseText.textContent = "";
+
+      q.choices.forEach(choice => {
+        const btn = document.createElement("button");
+        btn.textContent = choice.text;
+        btn.onclick = () => handleAnswer(choice.correct, q);
+        choicesContainer.appendChild(btn);
+      });
+    }
+
+    function handleAnswer(isCorrect, question) {
+      if (isCorrect) {
+        score++;
+        responseText.textContent = question.correctResponse;
+      } else {
+        responseText.textContent = question.wrongResponse;
+      }
+
+      scoreText.textContent = `คะแนน: ${score}`;
+      currentQuestion++;
+
+      setTimeout(() => {
+        if (currentQuestion < questions.length) {
+          showQuestion();
         } else {
-          score -= 5;
-          if(score < 0) score = 0;
-          updateScore();
-          showFeedback(false);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
-          setTimeout(showQuestion, 2000);
+          endGame();
         }
-      };
-      choicesBox.appendChild(btn);
-    });
-  }
-
-  function nextStage() {
-    currentStage++;
-    dialogIndex = 0;
-    if (currentStage >= stages.length) {
-      dialogBox.innerHTML = `
-        <div class="speaker">มายด์:</div>
-        <div>🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณได้คะแนน <strong>${score}</strong> คะแนนนะคะ~ ขอบคุณที่เล่นด้วยกัน 💖</div>
-      `;
-      clearChoices();
-      setBackground("https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg");
-    } else {
-      setBackground(stages[currentStage].bg);
-      showDialog();
+      }, 1200);
     }
-  }
 
-  function startGame() {
-    playerName = playerNameInput.value.trim();
-    if (!playerName) {
-      alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
-      playerNameInput.focus();
-      return;
+    function endGame() {
+      quizContainer.style.display = "none";
+      endScreen.style.display = "block";
+      finalScore.innerHTML = `เก่งมาก ${playerName} ได้คะแนนทั้งหมด <strong>${score}</strong> คะแนน 🏆`;
     }
-    startScreen.style.display = 'none';
-    currentStage = 0;
-    dialogIndex = 0;
-    score = 0;
-    updateScore();
-    setBackground(stages[0].bg);
-    showDialog();
-  }
-
-  startBtn.addEventListener('click', startGame);
-  playerNameInput.addEventListener('keydown', e => {
-    if(e.key === 'Enter') {
-      startGame();
-    }
-  });
-
-  document.getElementById('character-img').addEventListener('dragstart', e => e.preventDefault());
-</script>
+  </script>
 </body>
 </html>
