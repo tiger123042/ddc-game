@@ -38,7 +38,7 @@
     padding: 20px;
     position: relative;
     overflow: hidden;
-    cursor: pointer;
+    cursor: default; /* เปลี่ยนเป็น default เพราะไม่มีคลิก */
   }
   #game-container::before {
     content: "";
@@ -222,7 +222,6 @@
   let currentStage = 0;
   let dialogIndex = 0;
   let score = 0;
-  let waitingForClick = false;
 
   const stages = [
     {
@@ -331,6 +330,19 @@
     });
   }
 
+  // แสดงข้อความ dialog ทีละบรรทัด อัตโนมัติไหลต่อเนื่อง
+  function showDialog() {
+    const stage = stages[currentStage];
+    if (dialogIndex < stage.dialog.length) {
+      const line = stage.dialog[dialogIndex];
+      dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
+      dialogIndex++;
+      setTimeout(showDialog, 2000);
+    } else {
+      // แสดงคำถามและตัวเลือก
+      showQuestion();
+    }
+  }
 
   function showQuestion() {
     const stage = stages[currentStage];
@@ -396,14 +408,6 @@
     setBackground(stages[0].bg);
     showDialog();
   }
-
-  // คลิกที่ dialog-box ถ้าอยู่ช่วงข้อความ ให้แสดงข้อความถัดไป
-  dialogBox.addEventListener('click', () => {
-    if (waitingForClick) {
-      waitingForClick = false;
-      showDialog();
-    }
-  });
 
   startBtn.addEventListener('click', startGame);
   playerNameInput.addEventListener('keydown', e => {
