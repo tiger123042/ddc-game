@@ -107,7 +107,6 @@
     min-height: 30px;
     user-select: none;
   }
-  /* ภาพมายด์ การ์ตูน ตัวละครด้านซ้าย */
   #character-img {
     position: absolute;
     top: 20px;
@@ -123,7 +122,6 @@
     filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
     background: #fff0;
   }
-  /* หน้าจอกรอกชื่อ */
   #start-screen {
     position: fixed;
     top:0; left:0; right:0; bottom:0;
@@ -168,7 +166,6 @@
     background: #a6284a;
     box-shadow: 0 7px 14px #a6284aaa;
   }
-  /* อนิเมชันกะพริบสีเขียวและแดง */
   @keyframes correctFlash {
     0%, 100% { background-color: rgba(144,238,144, 0.3); }
     50% { background-color: rgba(34,139,34, 0.6); }
@@ -196,19 +193,19 @@
 <body>
 <h1>📚 จีบมายด์ & จัดหมู่หนังสือ DDC</h1>
 
-<div id="game-container" aria-live="polite" aria-atomic="true">
+<div id="game-container">
   <img id="character-img" 
     src="https://cdn.pixabay.com/photo/2021/05/15/11/00/girl-6255532_1280.jpg" 
     alt="มายด์ ตัวละครการ์ตูนหญิงใส่แว่น" draggable="false" />
-  <div id="dialog-box" role="region" aria-label="ข้อความสนทนา"></div>
-  <div id="choices" role="list"></div>
-  <div id="score-display" aria-live="polite" aria-atomic="true">คะแนน: 0</div>
+  <div id="dialog-box"></div>
+  <div id="choices"></div>
+  <div id="score-display">คะแนน: 0</div>
 </div>
 
-<div id="start-screen" role="dialog" aria-modal="true" aria-labelledby="start-title">
-  <h2 id="start-title">กรุณากรอกชื่อของคุณก่อนเริ่มเกม</h2>
-  <input type="text" id="player-name-input" placeholder="ชื่อของคุณ..." aria-required="true" autocomplete="off" />
-  <button id="start-btn" aria-label="เริ่มเกม">เริ่มเกม</button>
+<div id="start-screen">
+  <h2>กรุณากรอกชื่อของคุณก่อนเริ่มเกม</h2>
+  <input type="text" id="player-name-input" placeholder="ชื่อของคุณ..." />
+  <button id="start-btn">เริ่มเกม</button>
 </div>
 
 <script>
@@ -332,7 +329,10 @@
     const stage = stages[currentStage];
     dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
     clearChoices();
-    stage.choices.forEach((choice) => {
+
+    const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5); // ✅ สุ่ม
+
+    shuffledChoices.forEach((choice) => {
       const btn = document.createElement("button");
       btn.textContent = choice.text;
       btn.onclick = () => {
