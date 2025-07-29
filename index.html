@@ -2,145 +2,148 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>เกมจีบสาว - เปลี่ยนฉาก</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>เกมจีบสาว - DDC</title>
+  <link rel="stylesheet" href="style.css" />
   <style>
     body {
-      font-family: 'Prompt', sans-serif;
-      background-color: #fefefe;
       margin: 0;
-      padding: 20px;
+      font-family: 'Kanit', sans-serif;
+      background: #fefefe;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    #game-container {
+      max-width: 600px;
+      width: 90%;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
       text-align: center;
     }
-
-    #game-box {
-      width: 360px;
-      margin: 0 auto;
-      border: 4px solid #ff69b4;
-      border-radius: 16px;
+    #dialog-box {
       padding: 20px;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
-      position: relative;
+      transition: background-image 0.5s ease;
     }
-
     #character {
-      width: 150px;
-      margin-bottom: 12px;
+      width: 120px;
+      margin-bottom: 10px;
     }
-
     #question {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 10px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      font-size: 18px;
-      font-weight: bold;
+      font-size: 1.2em;
+      margin-bottom: 20px;
     }
-
-    .option {
+    .option-btn {
       display: block;
-      background: #fff;
-      padding: 10px;
-      border-radius: 8px;
+      padding: 10px 15px;
       margin: 8px auto;
-      width: 90%;
+      background: #f06292;
+      color: white;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
-      border: 2px solid #aaa;
-      transition: 0.3s;
+      transition: background 0.3s;
+      width: 80%;
     }
-
-    .option:hover {
-      background: #ffecf2;
-      border-color: #ff69b4;
+    .option-btn:hover {
+      background: #ec407a;
     }
-
     #result {
-      font-size: 18px;
-      margin-top: 15px;
+      font-size: 1.2em;
+      padding: 20px;
     }
   </style>
 </head>
 <body>
-
-  <h1>🌸 เกมจีบสาว - ตอน: ความรักในห้องสมุด 🌸</h1>
-
-  <div id="game-box">
-    <img id="character" src="https://cdn.pixabay.com/photo/2023/11/12/08/47/woman-8382546_1280.jpg" alt="มายด์">
-    <div id="question"></div>
-    <div id="options"></div>
-    <div id="result"></div>
+  <div id="game-container">
+    <div id="dialog-box">
+      <img id="character" src="img/mind.png" alt="มายด์" />
+      <div id="question">คำถามจะมาแสดงตรงนี้</div>
+      <div id="options"></div>
+    </div>
+    <div id="result" style="display:none;"></div>
   </div>
 
   <script>
-    const questions = [
+    const stages = [
       {
-        question: "หนังสือประเภทใดอยู่หมวด 000?",
-        options: ["คอมพิวเตอร์", "ศิลปะ", "ภาษา", "วรรณกรรม"],
-        answer: "คอมพิวเตอร์",
-        background: "url('https://i.imgur.com/yfhKMMv.jpg')" // ห้องสมุด
+        bg: "url('img/bg1.jpg')",
+        dialogs: [
+          { question: "มายด์: หนังสือเลขหมู่ 300 หมายถึงอะไร?", options: ["คณิตศาสตร์", "สังคมศาสตร์", "วิทยาศาสตร์", "เทคโนโลยี"], answer: "สังคมศาสตร์" },
+          { question: "มายด์: หนังสือหมวด 500 หมายถึงอะไร?", options: ["เทคโนโลยี", "วิทยาศาสตร์", "ศาสนา", "ประวัติศาสตร์"], answer: "วิทยาศาสตร์" },
+          { question: "มายด์: 000 คือหมวดอะไร?", options: ["ศิลปะ", "วิทยาการความรู้", "วรรณกรรม", "ภาษา"], answer: "วิทยาการความรู้" }
+        ]
       },
       {
-        question: "หมวด 600 เกี่ยวกับอะไร?",
-        options: ["ศาสนา", "เทคโนโลยี", "ภาษา", "ปรัชญา"],
-        answer: "เทคโนโลยี",
-        background: "url('https://i.imgur.com/DkwnkqP.jpg')" // ร้านกาแฟ
+        bg: "url('img/bg2.jpg')",
+        dialogs: [
+          { question: "มายด์: หนังสือหมวด 600 คืออะไร?", options: ["ศาสนา", "เทคโนโลยี", "วรรณกรรม", "ภาษา"], answer: "เทคโนโลยี" },
+          { question: "มายด์: หนังสือหมวด 700 หมายถึงอะไร?", options: ["ศิลปะ", "วรรณกรรม", "ภาษา", "ปรัชญา"], answer: "ศิลปะ" },
+          { question: "มายด์: หนังสือหมวด 800 คือ?", options: ["ปรัชญา", "วรรณกรรม", "ภาษา", "ศาสนา"], answer: "วรรณกรรม" }
+        ]
       },
       {
-        question: "หมวด 900 คือ...",
-        options: ["ประวัติศาสตร์", "ศิลปะ", "วรรณกรรม", "คณิตศาสตร์"],
-        answer: "ประวัติศาสตร์",
-        background: "url('https://i.imgur.com/p3H7NIE.jpg')" // สวนดอกไม้
+        bg: "url('img/bg3.jpg')",
+        dialogs: [
+          { question: "มายด์: 100 คือหมวดอะไร?", options: ["ศาสนา", "ปรัชญา", "สังคมศาสตร์", "เทคโนโลยี"], answer: "ปรัชญา" },
+          { question: "มายด์: หมวด 200 คือ?", options: ["ศาสนา", "ภาษา", "วรรณกรรม", "ศิลปะ"], answer: "ศาสนา" },
+          { question: "มายด์: หนังสือหมวด 900 หมายถึง?", options: ["ปรัชญา", "ประวัติศาสตร์", "ศาสนา", "วิทยาการความรู้"], answer: "ประวัติศาสตร์" }
+        ]
       }
     ];
 
-    let currentQuestion = 0;
+    let currentStage = 0;
+    let currentDialog = 0;
     let score = 0;
 
-    function loadQuestion() {
-      const q = questions[currentQuestion];
-      document.getElementById("question").textContent = q.question;
+    function setDialogBackground(bgUrl) {
+      const dialogBox = document.getElementById('dialog-box');
+      dialogBox.style.backgroundImage = bgUrl;
+    }
 
-      // เปลี่ยนฉากหลังของกรอบเกม
-      document.getElementById("game-box").style.backgroundImage = q.background;
+    function showDialog() {
+      if (currentStage >= stages.length) {
+        document.getElementById("dialog-box").style.display = "none";
+        const resultBox = document.getElementById("result");
+        resultBox.style.display = "block";
+        resultBox.innerHTML = `🎉 คุณได้คะแนน ${score} จาก 9 คะแนน<br><br><button onclick="location.reload()">เล่นอีกครั้ง</button>`;
+        return;
+      }
 
+      const stage = stages[currentStage];
+      const dialog = stage.dialogs[currentDialog];
+
+      document.getElementById("question").innerText = dialog.question;
       const optionsDiv = document.getElementById("options");
       optionsDiv.innerHTML = "";
-      q.options.forEach(option => {
-        const btn = document.createElement("div");
-        btn.textContent = option;
-        btn.className = "option";
-        btn.onclick = () => checkAnswer(option);
+
+      dialog.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.innerText = option;
+        btn.className = "option-btn";
+        btn.onclick = () => {
+          if (option === dialog.answer) score++;
+          currentDialog++;
+          if (currentDialog >= stage.dialogs.length) {
+            currentStage++;
+            currentDialog = 0;
+          }
+          showDialog();
+        };
         optionsDiv.appendChild(btn);
       });
+
+      // เปลี่ยนฉากหลังของกล่อง
+      setDialogBackground(stage.bg);
     }
 
-    function checkAnswer(selected) {
-      const resultDiv = document.getElementById("result");
-      const correct = questions[currentQuestion].answer;
-      if (selected === correct) {
-        score++;
-        resultDiv.innerHTML = "✅ ตอบถูก! คะแนน: " + score;
-      } else {
-        resultDiv.innerHTML = "❌ คำตอบไม่ถูกต้อง";
-      }
-      currentQuestion++;
-      if (currentQuestion < questions.length) {
-        setTimeout(() => {
-          resultDiv.innerHTML = "";
-          loadQuestion();
-        }, 1000);
-      } else {
-        setTimeout(() => {
-          resultDiv.innerHTML = `💖 เกมจบแล้ว! คุณได้คะแนน ${score}/${questions.length}`;
-          document.getElementById("options").innerHTML = "";
-        }, 1000);
-      }
-    }
-
-    loadQuestion();
+    showDialog();
   </script>
-
 </body>
 </html>
