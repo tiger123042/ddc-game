@@ -293,11 +293,11 @@
   ];
 
   function setBackground(url) {
-    gameContainer.style.backgroundImage = url(${url});
+    gameContainer.style.backgroundImage = `url(${url})`;
   }
 
   function updateScore() {
-    scoreDisplay.textContent = คะแนน: ${score};
+    scoreDisplay.textContent = `คะแนน: ${score}`;
   }
 
   function clearChoices() {
@@ -339,7 +339,7 @@
     const stage = stages[currentStage];
     if (dialogIndex < stage.dialog.length) {
       const line = stage.dialog[dialogIndex];
-      dialogBox.innerHTML = <div class="speaker">${line.speaker}:</div><div>${line.text}</div>;
+      dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
       dialogIndex++;
       setTimeout(showDialog, 2000);
     } else {
@@ -349,7 +349,7 @@
 
   function showQuestion() {
     const stage = stages[currentStage];
-    dialogBox.innerHTML = <div class="speaker">คำถาม:</div><div>${stage.question}</div>;
+    dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
     clearChoices();
     hintUsed = false; // reset คำใบ้ในแต่ละด่าน
 
@@ -364,14 +364,14 @@
           score += 10;
           updateScore();
           showFeedback(true);
-          dialogBox.innerHTML = <div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>;
+          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
           setTimeout(nextStage, 2000);
         } else {
           score -= 5;
           if (score < 0) score = 0;
           updateScore();
           showFeedback(false);
-          dialogBox.innerHTML = <div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>;
+          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
           setTimeout(showQuestion, 2000);
         }
       };
@@ -386,7 +386,7 @@
     hintBtn.onclick = () => {
       if (!hintUsed && stage.hint) {
         hintUsed = true;
-        alert(คำใบ้: ${stage.hint});
+        alert(`คำใบ้: ${stage.hint}`);
         hintBtn.disabled = true;
       }
     };
@@ -412,10 +412,10 @@
     clearChoices();
     if (currentStage >= stages.length) {
       sendScoreToGoogleSheet(playerName, score);
-      dialogBox.innerHTML = 
+      dialogBox.innerHTML = `
         <div class="speaker">มายด์:</div>
         <div>🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณได้คะแนน <strong>${score}</strong> คะแนนนะคะ~ ขอบคุณที่เล่นด้วยกัน 💖</div>
-      ;
+      `;
       setBackground("https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg");
       // แสดงปุ่มเล่นใหม่ให้คลิกหลังจบเกมด้วย
       clearChoices();
