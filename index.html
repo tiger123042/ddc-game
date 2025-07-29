@@ -51,17 +51,18 @@
     opacity: 0.3;
   }
   #dialog-box {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 18px 22px 18px 120px;
-    font-size: 1.15rem;
-    line-height: 1.6;
-    max-height: 45%;
-    overflow-y: auto;
-    box-shadow: inset 0 0 8px #d6336c33;
     position: relative;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    padding: 22px 24px 22px 220px; /* เผื่อที่วางภาพ */
+    font-size: 1.25rem;
+    line-height: 1.6;
+    max-height: 50%;
+    overflow-y: auto;
+    box-shadow: inset 0 0 12px #d6336c33;
     color: #4b2e49;
     transition: background-color 0.3s ease;
+    z-index: 10;
   }
   .speaker {
     font-weight: bold;
@@ -74,7 +75,7 @@
     flex-wrap: wrap;
     gap: 12px;
     justify-content: center;
-    z-index: 10;
+    z-index: 20;
   }
   #choices button {
     flex: 1 1 45%;
@@ -107,21 +108,24 @@
     text-shadow: 1px 1px 3px #fff;
     min-height: 30px;
     user-select: none;
+    z-index: 20;
   }
   #character-img {
     position: absolute;
-    top: 20px;
-    left: 15px;
-    width: 90px;
-    height: 120px;
-    border-radius: 15px;
-    box-shadow: 0 6px 12px rgba(214,51,108,0.5);
+    top: 10px;
+    left: 10px;
+    width: 180px;
+    height: 240px;
+    border-radius: 20px;
+    box-shadow: 0 8px 20px rgba(214,51,108,0.7);
     object-fit: contain;
     user-select: none;
     pointer-events: none;
-    z-index: 20;
-    filter: drop-shadow(1px 2px 2px rgba(0,0,0,0.2));
-    background: #fff0;
+    z-index: 5;
+    filter: drop-shadow(2px 4px 4px rgba(0,0,0,0.3));
+    background: transparent;
+    opacity: 0.85;
+    mix-blend-mode: multiply;
   }
   #start-screen {
     position: fixed;
@@ -180,13 +184,15 @@
       flex: 1 1 100%;
     }
     #dialog-box {
-      padding-left: 100px;
+      padding-left: 140px;
+      font-size: 1.1rem;
+      max-height: 55%;
     }
     #character-img {
-      width: 70px;
-      height: 100px;
-      top: 12px;
-      left: 10px;
+      width: 120px;
+      height: 160px;
+      top: 8px;
+      left: 8px;
     }
   }
 </style>
@@ -195,7 +201,7 @@
 <h1>📚 จีบมายด์ & จัดหมู่หนังสือ DDC</h1>
 
 <div id="game-container">
-<img id="character-img" src="mind.png" alt="มายด์" />
+  <img id="character-img" src="mind.png" alt="มายด์" />
   <div id="dialog-box"></div>
   <div id="choices"></div>
   <div id="score-display">คะแนน: 0</div>
@@ -220,7 +226,7 @@
   let currentStage = 0;
   let dialogIndex = 0;
   let score = 0;
-  let hintUsed = false;  // เก็บสถานะว่าใช้คำใบ้รอบนี้แล้วหรือยัง
+  let hintUsed = false;
 
   const stages = [
     {
@@ -332,7 +338,6 @@
     });
   }
 
-  // แสดงข้อความ dialog ทีละบรรทัด อัตโนมัติไหลต่อเนื่อง
   function showDialog() {
     const stage = stages[currentStage];
     if (dialogIndex < stage.dialog.length) {
@@ -349,9 +354,8 @@
     const stage = stages[currentStage];
     dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
     clearChoices();
-    hintUsed = false; // reset คำใบ้ในแต่ละด่าน
+    hintUsed = false;
 
-    // สร้างปุ่มคำตอบ
     const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5);
     shuffledChoices.forEach(choice => {
       const btn = document.createElement("button");
@@ -376,7 +380,6 @@
       choicesBox.appendChild(btn);
     });
 
-    // ปุ่มขอคำใบ้
     const hintBtn = document.createElement("button");
     hintBtn.textContent = "ขอคำใบ้ 💡";
     hintBtn.style.backgroundColor = "#3a8fbd";
@@ -393,7 +396,6 @@
     }
     choicesBox.appendChild(hintBtn);
 
-    // ปุ่มเล่นใหม่
     const restartBtn = document.createElement("button");
     restartBtn.textContent = "เล่นใหม่ 🔄";
     restartBtn.style.backgroundColor = "#6ab04c";
@@ -415,7 +417,6 @@
         <div>🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณได้คะแนน <strong>${score}</strong> คะแนนนะคะ~ ขอบคุณที่เล่นด้วยกัน 💖</div>
       `;
       setBackground("https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg");
-      // แสดงปุ่มเล่นใหม่ให้คลิกหลังจบเกมด้วย
       clearChoices();
       const restartBtn = document.createElement("button");
       restartBtn.textContent = "เล่นใหม่ 🔄";
