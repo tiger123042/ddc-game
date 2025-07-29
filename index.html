@@ -1,188 +1,200 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>เกมจีบสาว - จัดหมู่หนังสือ DDC</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
-  /* ... [styles remain unchanged] ... */
-</style>
+  <meta charset="UTF-8">
+  <title>เกมจีบมายด์ - จัดหมู่หนังสือ DDC</title>
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+      background-color: #f0f8ff;
+      margin: 0;
+      padding: 0;
+      background-image: url("https://cdn.pixabay.com/photo/2020/04/12/16/04/library-5036901_1280.jpg");
+      background-size: cover;
+    }
+    #gameContainer {
+      max-width: 700px;
+      margin: 30px auto;
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      text-align: center;
+      color: #d63384;
+    }
+    #dialogBox {
+      margin-bottom: 20px;
+      font-size: 1.1em;
+    }
+    .choice-btn {
+      display: block;
+      margin: 8px 0;
+      padding: 10px;
+      width: 100%;
+      font-size: 1em;
+      background-color: #ff85a2;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .choice-btn:hover {
+      background-color: #e25580;
+    }
+    .speaker {
+      font-weight: bold;
+      color: #ff1493;
+    }
+  </style>
 </head>
 <body>
-<h1>📚 จีบมายด์ & จัดหมู่หนังสือ DDC</h1>
 
-<div id="game-container">
-  <img id="character-img" 
-    src="https://cdn.pixabay.com/photo/2021/05/15/11/00/girl-6255532_1280.jpg" 
-    alt="มายด์ ตัวละครการ์ตูนหญิงใส่แว่น" draggable="false" />
-  <div id="dialog-box"></div>
+<div id="gameContainer">
+  <h1>จีบมายด์ 💖 สไตล์ห้องสมุด</h1>
+  <div id="dialogBox"></div>
   <div id="choices"></div>
-  <div id="score-display">คะแนน: 0</div>
 </div>
 
-<div id="start-screen">
-  <h2>กรุณากรอกชื่อของคุณก่อนเริ่มเกม</h2>
-  <input type="text" id="player-name-input" placeholder="ชื่อของคุณ..." />
-  <button id="start-btn">เริ่มเกม</button>
-</div>
-
-<!-- ✅ เพิ่มโค้ด JavaScript สำหรับส่งข้อมูลไป Google Sheet -->
 <script>
-function submitScoreToSheet(name, score) {
-  const url = "https://script.google.com/macros/s/AKfycbyE6A6wP3Xh5J4GPaoVYVkDmMvo2UHENIHBIWBFUYqOBv77aWTcx1fDfFbsyGQIHU-7/exec";
-
-  const data = {
-    name: name,
-    score: score
-  };
-
-  fetch(url, {
-    method: "POST",
-    body: JSON.stringify(data),
-    headers: {
-      "Content-Type": "application/json"
-    }
-  })
-  .then(response => response.json())
-  .then(result => {
-    console.log("ส่งข้อมูลสำเร็จ:", result);
-  })
-  .catch(error => {
-    console.error("เกิดข้อผิดพลาดในการส่งข้อมูล:", error);
-  });
-}
-</script>
-
-<script>
-  const dialogBox = document.getElementById('dialog-box');
-  const choicesBox = document.getElementById('choices');
-  const scoreDisplay = document.getElementById('score-display');
-  const gameContainer = document.getElementById('game-container');
-  const startScreen = document.getElementById('start-screen');
-  const playerNameInput = document.getElementById('player-name-input');
-  const startBtn = document.getElementById('start-btn');
-
-  let playerName = '';
-  let currentStage = 0;
-  let dialogIndex = 0;
-  let score = 0;
-
   const stages = [
-    /* ... [unchanged stage content] ... */
+    {
+      bg: "https://cdn.pixabay.com/photo/2023/11/12/08/47/woman-8382546_1280.jpg",
+      dialog: [
+        { speaker: "มายด์", text: "สวัสดีค่ะ! คุณชื่ออะไรเอ่ย? 😊" }
+      ],
+      input: true
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg",
+      dialog: [
+        { speaker: "มายด์", text: "มายด์มีคำถามเกี่ยวกับหมวดหมู่หนังสือ DDC นะ พร้อมมั้ย?" }
+      ],
+      choices: [
+        { text: "พร้อมแล้ว!", score: 1 },
+        { text: "ยังไม่แน่ใจ", score: 0 }
+      ]
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2015/09/05/21/51/library-925545_1280.jpg",
+      dialog: [
+        { speaker: "มายด์", text: "000 คือหมวดอะไรในระบบดิวอี้?" }
+      ],
+      choices: [
+        { text: "ความรู้ทั่วไป", score: 1 },
+        { text: "เทคโนโลยี", score: 0 },
+        { text: "วรรณกรรม", score: 0 }
+      ]
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2017/08/01/08/29/library-2569989_1280.jpg",
+      dialog: [
+        { speaker: "มายด์", text: "800 คือหมวดอะไรนะ?" }
+      ],
+      choices: [
+        { text: "ภาษา", score: 0 },
+        { text: "วรรณกรรม", score: 1 },
+        { text: "ศาสนา", score: 0 }
+      ]
+    }
   ];
 
-  function setBackground(url) {
-    gameContainer.style.backgroundImage = `url(${url})`;
-  }
+  let currentStage = 0;
+  let dialogIndex = 0;
+  let playerName = "";
+  let score = 0;
 
-  function updateScore() {
-    scoreDisplay.textContent = `คะแนน: ${score}`;
-  }
-
-  function clearChoices() {
-    choicesBox.innerHTML = "";
-  }
-
-  function disableChoices() {
-    choicesBox.querySelectorAll("button").forEach(btn => btn.disabled = true);
-  }
-
-  function showFeedback(correct) {
-    if(correct) {
-      dialogBox.style.animation = 'correctFlash 0.6s';
-    } else {
-      dialogBox.style.animation = 'wrongFlash 0.6s';
-    }
-    dialogBox.addEventListener('animationend', () => {
-      dialogBox.style.animation = '';
-    }, { once: true });
-  }
+  const dialogBox = document.getElementById("dialogBox");
+  const choicesDiv = document.getElementById("choices");
 
   function showDialog() {
     const stage = stages[currentStage];
     if (dialogIndex < stage.dialog.length) {
-      const line = stage.dialog[dialogIndex];
-      dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
+      const d = stage.dialog[dialogIndex];
+      dialogBox.innerHTML = `<div class="speaker">${d.speaker}:</div><div>${d.text}</div>`;
       dialogIndex++;
-      setTimeout(showDialog, 1600);
     } else {
-      showQuestion();
+      if (stage.input) {
+        dialogBox.innerHTML += `
+          <div><input id="nameInput" type="text" placeholder="พิมพ์ชื่อของคุณ" style="width: 100%; padding: 8px; margin-top: 10px;"></div>
+          <button class="choice-btn" onclick="saveName()">บันทึกชื่อ</button>
+        `;
+      } else if (stage.choices) {
+        showChoices(stage.choices);
+      } else {
+        nextStage();
+      }
     }
   }
 
-  function showQuestion() {
-    const stage = stages[currentStage];
-    dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
-    clearChoices();
+  function saveName() {
+    const input = document.getElementById("nameInput");
+    playerName = input.value.trim();
+    if (playerName !== "") {
+      nextStage();
+    } else {
+      alert("กรุณาใส่ชื่อก่อนนะคะ");
+    }
+  }
 
-    const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5);
-
-    shuffledChoices.forEach((choice) => {
+  function showChoices(choices) {
+    choicesDiv.innerHTML = "";
+    choices.forEach(choice => {
       const btn = document.createElement("button");
+      btn.className = "choice-btn";
       btn.textContent = choice.text;
       btn.onclick = () => {
-        disableChoices();
-        if (choice.correct) {
-          score += 10;
-          updateScore();
-          showFeedback(true);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
-          setTimeout(nextStage, 2000);
-        } else {
-          score -= 5;
-          if(score < 0) score = 0;
-          updateScore();
-          showFeedback(false);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
-          setTimeout(showQuestion, 2000);
-        }
+        score += choice.score;
+        nextStage();
       };
-      choicesBox.appendChild(btn);
+      choicesDiv.appendChild(btn);
     });
+  }
+
+  function clearChoices() {
+    choicesDiv.innerHTML = "";
+  }
+
+  function setBackground(url) {
+    document.body.style.backgroundImage = `url('${url}')`;
   }
 
   function nextStage() {
     currentStage++;
     dialogIndex = 0;
     if (currentStage >= stages.length) {
-      dialogBox.innerHTML = `
-        <div class="speaker">มายด์:</div>
-        <div>🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณได้คะแนน <strong>${score}</strong> คะแนนนะคะ~ ขอบคุณที่เล่นด้วยกัน 💖</div>
-      `;
+      dialogBox.innerHTML = 
+        `<div class="speaker">มายด์:</div>
+        <div>🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณได้คะแนน <strong>${score}</strong> คะแนนนะคะ~ ขอบคุณที่เล่นด้วยกัน 💖</div>`;
       clearChoices();
       setBackground("https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg");
-      submitScoreToSheet(playerName, score); // ✅ ส่งคะแนนไป Google Sheet
+
+      // ✅ ส่งข้อมูลไปยัง Google Sheet
+      fetch("https://script.google.com/macros/s/AKfycbyE6A6wP3Xh5J4GPaoVYVkDmMvo2UHENIHBIWBFUYqOBv77aWTcx1fDfFbsyGQIHU-7/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: playerName,
+          score: score
+        })
+      })
+      .then(res => res.json())
+      .then(data => console.log("ส่งข้อมูลสำเร็จ:", data))
+      .catch(err => console.error("ส่งข้อมูลล้มเหลว:", err));
+
     } else {
       setBackground(stages[currentStage].bg);
       showDialog();
     }
   }
 
-  function startGame() {
-    playerName = playerNameInput.value.trim();
-    if (!playerName) {
-      alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
-      playerNameInput.focus();
-      return;
-    }
-    startScreen.style.display = 'none';
-    currentStage = 0;
-    dialogIndex = 0;
-    score = 0;
-    updateScore();
-    setBackground(stages[0].bg);
-    showDialog();
-  }
-
-  startBtn.addEventListener('click', startGame);
-  playerNameInput.addEventListener('keydown', e => {
-    if(e.key === 'Enter') {
-      startGame();
-    }
-  });
-
-  document.getElementById('character-img').addEventListener('dragstart', e => e.preventDefault());
+  // เริ่มเกม
+  setBackground(stages[0].bg);
+  showDialog();
 </script>
 </body>
 </html>
