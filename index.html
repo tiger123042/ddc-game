@@ -315,6 +315,22 @@
     }, { once: true });
   }
 
+  // ส่งชื่อและคะแนนไป Google Sheets ผ่าน Google Apps Script Web App
+  function sendScoreToGoogleSheet(name, score) {
+    const url = 'https://script.google.com/macros/s/AKfycbyE6A6wP3Xh5J4GPaoVYVkDmMvo2UHENIHBIWBFUYqOBv77aWTcx1fDfFbsyGQIHU-7/exec';
+
+    fetch(url, {
+      method: 'POST',
+      mode: 'no-cors', // ป้องกัน CORS (ไม่มี response กลับ)
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name, score })
+    }).catch(err => {
+      console.error('ส่งคะแนนไม่สำเร็จ', err);
+    });
+  }
+
   // แสดงข้อความ dialog ทีละบรรทัด ให้คลิกที่ dialog-box เพื่อไปต่อ
   function showDialog() {
     const stage = stages[currentStage];
@@ -365,6 +381,8 @@
     dialogIndex = 0;
     clearChoices();
     if (currentStage >= stages.length) {
+      sendScoreToGoogleSheet(playerName, score);
+
       dialogBox.innerHTML = `
         <div class="speaker">มายด์:</div>
         <div>🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณได้คะแนน <strong>${score}</strong> คะแนนนะคะ~ ขอบคุณที่เล่นด้วยกัน 💖</div>
