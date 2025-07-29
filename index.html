@@ -331,19 +331,6 @@
     });
   }
 
-  // แสดงข้อความ dialog ทีละบรรทัด ให้คลิกที่ dialog-box เพื่อไปต่อ
-  function showDialog() {
-    const stage = stages[currentStage];
-    if (dialogIndex < stage.dialog.length) {
-      const line = stage.dialog[dialogIndex];
-      dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
-      waitingForClick = true;
-      dialogIndex++;
-    } else {
-      // แสดงคำถามและตัวเลือก
-      showQuestion();
-    }
-  }
 
   function showQuestion() {
     const stage = stages[currentStage];
