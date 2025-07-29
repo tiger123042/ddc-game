@@ -361,13 +361,13 @@
       btn.onclick = () => {
         disableChoices();
         if (choice.correct) {
-          score += 10;
+          score += 1;
           updateScore();
           showFeedback(true);
           dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
           setTimeout(nextStage, 2000);
         } else {
-          score -= 5;
+          score -= 1;
           if (score < 0) score = 0;
           updateScore();
           showFeedback(false);
