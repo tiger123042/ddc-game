@@ -437,63 +437,76 @@
     }
   }
 
-  function showQuestion() {
-    const stage = stages[currentStage];
-    dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
-    clearChoices();
-    hintUsed = false;
+let questionTimer = null; // เก็บ ID ตัวจับเวลา
 
-    const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5);
-    shuffledChoices.forEach(choice => {
-      const btn = document.createElement("button");
-      btn.textContent = choice.text;
-  btn.onclick = () => {
-  disableChoices();
-  if (choice.correct) {
-    correctSound.play(); // เล่นเสียงถูก
-    score += 1;
-    updateScore();
-    showFeedback(true);
-    dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
-    setTimeout(nextStage, 2000);
-  } else {
-    wrongSound.play(); // เล่นเสียงผิด
-    score -= 0;
-    if (score < 0) score = 0;
-    updateScore();
-    showFeedback(false);
-    dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
-    setTimeout(nextStage, 2000);  // เปลี่ยนจาก showQuestion เป็น nextStage
-  }
-};
-      choicesBox.appendChild(btn);
-    });
+function showQuestion() {
+  const stage = stages[currentStage];
+  dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
+  clearChoices();
+  hintUsed = false;
 
-    const hintBtn = document.createElement("button");
-    hintBtn.textContent = "ขอคำใบ้ 💡";
-    hintBtn.style.backgroundColor = "#3a8fbd";
-    hintBtn.style.boxShadow = "0 4px 8px #3a8fbd88";
-    hintBtn.onclick = () => {
-      if (!hintUsed && stage.hint) {
-        hintUsed = true;
-        alert(`คำใบ้: ${stage.hint}`);
-        hintBtn.disabled = true;
+  const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5);
+  shuffledChoices.forEach(choice => {
+    const btn = document.createElement("button");
+    btn.textContent = choice.text;
+    btn.onclick = () => {
+      if (questionTimer) {
+        clearTimeout(questionTimer); // เคลียร์จับเวลาก่อนถ้ามี
+        questionTimer = null;
+      }
+      disableChoices();
+      if (choice.correct) {
+        correctSound.play(); // เล่นเสียงถูก
+        score += 1;
+        updateScore();
+        showFeedback(true);
+        dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
+        setTimeout(nextStage, 2000);
+      } else {
+        wrongSound.play(); // เล่นเสียงผิด
+        if (score > 0) score -= 0; // คะแนนไม่ลด
+        updateScore();
+        showFeedback(false);
+        dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
+        setTimeout(nextStage, 2000);
       }
     };
-    if (!stage.hint) {
+    choicesBox.appendChild(btn);
+  });
+
+  // ปุ่มขอคำใบ้และเล่นใหม่เหมือนเดิม
+  const hintBtn = document.createElement("button");
+  hintBtn.textContent = "ขอคำใบ้ 💡";
+  hintBtn.style.backgroundColor = "#3a8fbd";
+  hintBtn.style.boxShadow = "0 4px 8px #3a8fbd88";
+  hintBtn.onclick = () => {
+    if (!hintUsed && stage.hint) {
+      hintUsed = true;
+      alert(`คำใบ้: ${stage.hint}`);
       hintBtn.disabled = true;
     }
-    choicesBox.appendChild(hintBtn);
-
-    const restartBtn = document.createElement("button");
-    restartBtn.textContent = "เล่นใหม่ 🔄";
-    restartBtn.style.backgroundColor = "#6ab04c";
-    restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
-    restartBtn.onclick = () => {
-      location.reload();
-    };
-    choicesBox.appendChild(restartBtn);
+  };
+  if (!stage.hint) {
+    hintBtn.disabled = true;
   }
+  choicesBox.appendChild(hintBtn);
+
+  const restartBtn = document.createElement("button");
+  restartBtn.textContent = "เล่นใหม่ 🔄";
+  restartBtn.style.backgroundColor = "#6ab04c";
+  restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
+  restartBtn.onclick = () => {
+    location.reload();
+  };
+  choicesBox.appendChild(restartBtn);
+
+  // เพิ่มจับเวลา 10 วินาทีให้คำถามนี้
+  questionTimer = setTimeout(() => {
+    disableChoices();
+    dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:orange;">หมดเวลาแล้วนะ! เราไปคำถามต่อไปกันเลย~</div>`;
+    setTimeout(nextStage, 2000);
+  }, 10000); // 10000 ms = 10 วินาที
+}
 
   function nextStage() {
     currentStage++;
