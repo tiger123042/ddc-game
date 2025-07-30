@@ -193,7 +193,6 @@
       height: 180px;
       top: 20px;
       left: 8px;
-    
     }
   }
 </style>
@@ -233,6 +232,7 @@
   let dialogIndex = 0;
   let score = 0;
   let hintUsed = false;
+  let answerTimeout = null; // ตัวจับเวลา 10 วินาที
 
   const stages = [
   {
@@ -396,45 +396,28 @@
   }
 
   function disableChoices() {
-    choicesBox.querySelectorAll("button").forEach(btn => btn.disabled = true);
+    const btns = choicesBox.querySelectorAll('button');
+    btns.forEach(b => b.disabled = true);
   }
 
   function showFeedback(correct) {
     if(correct) {
-      dialogBox.style.animation = 'correctFlash 0.6s';
+      dialogBox.style.animation = 'correctFlash 1s ease';
     } else {
-      dialogBox.style.animation = 'wrongFlash 0.6s';
+      dialogBox.style.animation = 'wrongFlash 1s ease';
     }
-    dialogBox.addEventListener('animationend', () => {
-      dialogBox.style.animation = '';
-    }, { once: true });
+    setTimeout(() => dialogBox.style.animation = '', 1000);
   }
 
-  function sendScoreToGoogleSheet(name, score) {
-    const url = 'https://script.google.com/macros/s/AKfycbyE6A6wP3Xh5J4GPaoVYVkDmMvo2UHENIHBIWBFUYqOBv77aWTcx1fDfFbsyGQIHU-7/exec';
-
-    fetch(url, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name, score })
-    }).catch(err => {
-      console.error('ส่งคะแนนไม่สำเร็จ', err);
-    });
-  }
-
-  function showDialog() {
-    const stage = stages[currentStage];
-    if (dialogIndex < stage.dialog.length) {
-      const line = stage.dialog[dialogIndex];
-      dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
-      dialogIndex++;
-      setTimeout(showDialog, 2000);
-    } else {
+  function showDialog(stage, index) {
+    const d = stage.dialog[index];
+    if (!d) {
+      // เมื่อจบ dialog ให้แสดงคำถาม
       showQuestion();
+      return;
     }
+    dialogBox.innerHTML = `<div class="speaker">${d.speaker}:</div><div>${d.text.replace("{playerName}", playerName)}</div>`;
+    dialogIndex++;
   }
 
   function showQuestion() {
@@ -443,32 +426,47 @@
     clearChoices();
     hintUsed = false;
 
+    // เริ่มจับเวลา 10 วินาที
+    if (answerTimeout) clearTimeout(answerTimeout);
+    answerTimeout = setTimeout(() => {
+      disableChoices();
+      wrongSound.play();
+      showFeedback(false);
+      dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">เวลาหมด! ${stage.wrongResponse}</div>`;
+      // ไม่ลบคะแนน เพราะคำขอ user ไม่ให้ลบ
+      setTimeout(nextStage, 2000);
+    }, 10000);
+
     const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5);
     shuffledChoices.forEach(choice => {
       const btn = document.createElement("button");
       btn.textContent = choice.text;
-     btn.onclick = () => {
-  disableChoices();
-  if (choice.correct) {
-    correctSound.play(); // เล่นเสียงถูก
-    score += 1;
-    updateScore();
-    showFeedback(true);
-    dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
-    setTimeout(nextStage, 2000);
-  } else {
-    wrongSound.play(); // เล่นเสียงผิด
-    score -= 1;
-    if (score < 0) score = 0;
-    updateScore();
-    showFeedback(false);
-    dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
-    setTimeout(showQuestion, 2000);
-  }
-};
+      btn.onclick = () => {
+        if (answerTimeout) {
+          clearTimeout(answerTimeout);
+          answerTimeout = null;
+        }
+        disableChoices();
+        if (choice.correct) {
+          correctSound.play(); // เล่นเสียงถูก
+          score += 1;
+          updateScore();
+          showFeedback(true);
+          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
+          setTimeout(nextStage, 2000);
+        } else {
+          wrongSound.play(); // เล่นเสียงผิด
+          // ไม่ลบคะแนนเมื่อผิด ตามคำขอ
+          updateScore();
+          showFeedback(false);
+          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
+          setTimeout(nextStage, 2000);
+        }
+      };
       choicesBox.appendChild(btn);
     });
 
+    // ปุ่มขอคำใบ้
     const hintBtn = document.createElement("button");
     hintBtn.textContent = "ขอคำใบ้ 💡";
     hintBtn.style.backgroundColor = "#3a8fbd";
@@ -485,6 +483,7 @@
     }
     choicesBox.appendChild(hintBtn);
 
+    // ปุ่มเล่นใหม่
     const restartBtn = document.createElement("button");
     restartBtn.textContent = "เล่นใหม่ 🔄";
     restartBtn.style.backgroundColor = "#6ab04c";
@@ -498,51 +497,32 @@
   function nextStage() {
     currentStage++;
     dialogIndex = 0;
-    clearChoices();
-    if (currentStage >= stages.length) {
-      sendScoreToGoogleSheet(playerName, score);
-      dialogBox.innerHTML = `
-        <div class="speaker">มายด์:</div>
-        <div>🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณได้คะแนน <strong>${score}</strong> คะแนนนะคะ~ ขอบคุณที่เล่นด้วยกัน 💖</div>
-      `;
-      setBackground("https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg");
+    if(currentStage >= stages.length) {
+      // เกมจบ
+      dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div>จบเกมแล้ว! ${playerName} ได้คะแนนทั้งหมด ${score} คะแนน 🎉🎉🎉 ขอบคุณที่เล่นนะ!</div>`;
       clearChoices();
-      const restartBtn = document.createElement("button");
-      restartBtn.textContent = "เล่นใหม่ 🔄";
-      restartBtn.style.backgroundColor = "#6ab04c";
-      restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
-      restartBtn.onclick = () => {
-        location.reload();
-      };
-      choicesBox.appendChild(restartBtn);
-    } else {
-      setBackground(stages[currentStage].bg);
-      showDialog();
-    }
-  }
-
-  function startGame() {
-    playerName = playerNameInput.value.trim();
-    if (!playerName) {
-      alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
-      playerNameInput.focus();
       return;
     }
-    startScreen.style.display = 'none';
-    currentStage = 0;
-    dialogIndex = 0;
-    score = 0;
-    updateScore();
-    setBackground(stages[0].bg);
-    showDialog();
+    setBackground(stages[currentStage].bg);
+    showDialog(stages[currentStage], dialogIndex);
   }
 
-  startBtn.addEventListener('click', startGame);
-  playerNameInput.addEventListener('keydown', e => {
-    if(e.key === 'Enter') startGame();
+  startBtn.addEventListener('click', () => {
+    const name = playerNameInput.value.trim();
+    if(name === '') {
+      alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
+      return;
+    }
+    playerName = name;
+    startScreen.style.display = 'none';
+    setBackground(stages[0].bg);
+    showDialog(stages[0], dialogIndex);
   });
 
-  document.getElementById('character-img').addEventListener('dragstart', e => e.preventDefault());
+  // เริ่มต้น
+  updateScore();
+
 </script>
+
 </body>
 </html>
