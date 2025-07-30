@@ -447,23 +447,25 @@
     shuffledChoices.forEach(choice => {
       const btn = document.createElement("button");
       btn.textContent = choice.text;
-      btn.onclick = () => {
-        disableChoices();
-        if (choice.correct) {
-          score += 1;
-          updateScore();
-          showFeedback(true);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
-          setTimeout(nextStage, 2000);
-        } else {
-          score -= 1;
-          if (score < 0) score = 0;
-          updateScore();
-          showFeedback(false);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
-          setTimeout(showQuestion, 2000);
-        }
-      };
+     btn.onclick = () => {
+  disableChoices();
+  if (choice.correct) {
+    correctSound.play(); // เล่นเสียงถูก
+    score += 1;
+    updateScore();
+    showFeedback(true);
+    dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
+    setTimeout(nextStage, 2000);
+  } else {
+    wrongSound.play(); // เล่นเสียงผิด
+    score -= 1;
+    if (score < 0) score = 0;
+    updateScore();
+    showFeedback(false);
+    dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
+    setTimeout(showQuestion, 2000);
+  }
+};
       choicesBox.appendChild(btn);
     });
 
