@@ -9,8 +9,7 @@
   body {
     margin: 0;
     font-family: 'Kanit', sans-serif;
-    background: #fef6e4 url('https://cdn.pixabay.com/photo/2016/11/29/10/07/notebook-1869347_1280.jpg') no-repeat center center fixed;
-    background-size: cover;
+    background: #fef6e4;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -54,7 +53,7 @@
     position: relative;
     background: rgba(255, 255, 255, 0.85);
     border-radius: 20px;
-    padding: 22px 24px 22px 220px; /* เผื่อที่วางภาพ */
+    padding: 22px 24px 22px 220px;
     font-size: 1.25rem;
     line-height: 1.6;
     max-height: 50%;
@@ -63,6 +62,7 @@
     color: #4b2e49;
     transition: background-color 0.3s ease;
     z-index: 10;
+    user-select: none;
   }
   .speaker {
     font-weight: bold;
@@ -116,16 +116,11 @@
     left: 40px;
     width: 280px;
     height: 420px;
-    border-radius: 0;
-    box-shadow: none;
     object-fit: contain;
     user-select: none;
     pointer-events: none;
     z-index: 5;
-    filter: none;
     background: transparent;
-    opacity: 1;
-    mix-blend-mode: normal;
   }
   #start-screen {
     position: fixed;
@@ -145,6 +140,7 @@
     color: #d6336c;
     font-size: 2rem;
     text-shadow: 1px 1px 2px #fff;
+    text-align: center;
   }
   #player-name-input {
     font-size: 1.2rem;
@@ -171,14 +167,6 @@
     background: #a6284a;
     box-shadow: 0 7px 14px #a6284aaa;
   }
-  @keyframes correctFlash {
-    0%, 100% { background-color: rgba(144,238,144, 0.3); }
-    50% { background-color: rgba(34,139,34, 0.6); }
-  }
-  @keyframes wrongFlash {
-    0%, 100% { background-color: rgba(255,182,193, 0.3); }
-    50% { background-color: rgba(220,20,60, 0.6); }
-  }
   @media (max-width: 600px) {
     #choices button {
       flex: 1 1 100%;
@@ -202,7 +190,7 @@
 
 <div id="game-container">
   <img id="character-img" src="mind.png" alt="มายด์" />
-  <div id="dialog-box"></div>
+  <div id="dialog-box" title="คลิกเพื่ออ่านต่อ"></div>
   <div id="choices"></div>
   <div id="score-display">คะแนน: 0</div>
 </div>
@@ -215,6 +203,7 @@
 
 <audio id="correct-sound" src="correct.mp3" preload="auto"></audio>
 <audio id="wrong-sound" src="wrong.mp3" preload="auto"></audio>
+
 <script>
   const dialogBox = document.getElementById('dialog-box');
   const choicesBox = document.getElementById('choices');
@@ -231,157 +220,27 @@
   let currentStage = 0;
   let dialogIndex = 0;
   let score = 0;
-  let hintUsed = false;
-  let answerTimeout = null; // ตัวจับเวลา 10 วินาที
 
   const stages = [
-  {
-    bg: "https://cdn.pixabay.com/photo/2019/09/22/21/06/stairs-4496960_1280.jpg",
-    dialog: [
-      {speaker: "มายด์", text: "ไง~ ยินดีต้อนรับสู่โลกแห่งการจัดหนังสือนะ 💕"},
-      {speaker: "มายด์", text: "เราจะเริ่มด้วยคำถามเบาๆก่อนนะ พร้อมหรือยัง? 😊"}
-    ],
-    question: "ทำไมเราต้องจัดหมู่หนังสือในห้องสมุดด้วยล่ะ?",
-    choices: [
-      {text: "เพื่อให้ค้นหาหนังสือได้ง่ายและรวดเร็ว", correct: true},
-      {text: "เพราะอยากให้ห้องสมุดดูมีสีสัน", correct: false},
-      {text: "เพราะจะทำให้หนังสือหายากขึ้น", correct: false},
-      {text: "เพราะเป็นแฟชั่นใหม่ของห้องสมุด", correct: false}
-    ],
-    hint: "คำใบ้: เพื่อความสะดวกและรวดเร็วในการค้นหา",
-    correctResponse: "ใช่เลย! แบบนี้ฉันชอบ 💖",
-    wrongResponse: "เอ๊ะ... ลองคิดอีกทีน้า~"
-  },
-  {
-    bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_1280.jpg",
-    dialog: [
-      {speaker: "มายด์", text: "ต่อไป... ถ้าจำไม่ผิด หมวด 500 คือ...? 🤔"}
-    ],
-    question: "หมวด 500 ในระบบ DDC คือเรื่องอะไร?",
-    choices: [
-      {text: "วิทยาศาสตร์และธรรมชาติ", correct: true},
-      {text: "การเมือง", correct: false},
-      {text: "ประวัติศาสตร์", correct: false},
-      {text: "เทคโนโลยี", correct: false}
-    ],
-    hint: "คำใบ้: เกี่ยวข้องกับธรรมชาติและวิทยาศาสตร์",
-    correctResponse: "เก่งมากเลย! ฉันปลื้มสุดๆ 😳",
-    wrongResponse: "อุ๊ย ไม่ใช่นะ ลองใหม่นะ~"
-  },
-  {
-    bg: "https://cdn.pixabay.com/photo/2023/01/26/02/15/books-7744938_1280.jpg",
-    dialog: [
-      {speaker: "มายด์", text: "แล้วถ้าไม่มีระบบ DDC จะเกิดอะไรขึ้นน้า? 🧐"}
-    ],
-    question: "เหตุผลที่ต้องใช้ระบบ DDC คืออะไร?",
-    choices: [
-      {text: "เพื่อให้ค้นหาง่ายและจัดเก็บสะดวก", correct: true},
-      {text: "เพื่อให้หนังสือราคาสูงขึ้น", correct: false},
-      {text: "เพื่อให้หนังสืออ่านยากขึ้น", correct: false},
-      {text: "เพราะครูสั่งมา", correct: false}
-    ],
-    hint: "คำใบ้: เพื่อให้การจัดเก็บและค้นหาง่ายขึ้น",
-    correctResponse: "ตอบดีมากเลย~ นี่แหละคนที่เข้าใจฉัน 😍",
-    wrongResponse: "อื้ม... ไม่ใช่แน่ๆ ลองดูดีๆอีกทีนะ"
-  },
-  {
-    bg: "https://cdn.pixabay.com/photo/2015/07/31/11/45/library-869061_1280.jpg",
-    dialog: [
-      {speaker: "มายด์", text: "สุดท้ายแล้วจ้า~ 💫 ถ้าเธอตอบได้ เราอาจจะไปอ่านหนังสือด้วยกันก็ได้นะ~"}
-    ],
-    question: "หมวด 700 ของ DDC คืออะไร?",
-    choices: [
-      {text: "ศิลปะและการออกแบบ", correct: true},
-      {text: "กฎหมาย", correct: false},
-      {text: "วิทยาศาสตร์", correct: false},
-      {text: "สุขภาพ", correct: false}
-    ],
-    hint: "คำใบ้: หมวดนี้เกี่ยวกับความคิดสร้างสรรค์และศิลปะ",
-    correctResponse: "ว้าว~ เธอนี่แหละคู่หูอ่านหนังสือในฝันของฉันเลย 😘",
-    wrongResponse: "อือ... ไม่ใช่นะ ลองตอบใหม่สิจ๊ะ"
-  },
-  // เพิ่มคำถามใหม่ 6 ข้อต่อไปนี้
-  {
-    bg: "https://cdn.pixabay.com/photo/2020/07/24/09/49/books-5433432_1280.jpg",
-    dialog: [
-      {speaker: "มายด์", text: "คำถามนี้ยากขึ้นอีกนิดนะ 😉"}
-    ],
-    question: "หมวด 100 ในระบบ DDC คือเรื่องอะไร?",
-    choices: [
-      {text: "ปรัชญาและจิตวิทยา", correct: true},
-      {text: "ศิลปะ", correct: false},
-      {text: "ประวัติศาสตร์", correct: false},
-      {text: "เทคโนโลยี", correct: false}
-    ],
-    hint: "คำใบ้: เกี่ยวกับความคิดและจิตใจ",
-    correctResponse: "ถูกต้อง! เธอฉลาดมากเลย 😍",
-    wrongResponse: "ผิดจ้า ลองใหม่อีกทีนะ!"
-  },
-  {
-    bg: "https://cdn.pixabay.com/photo/2014/10/14/20/14/library-488690_1280.jpg",
-    dialog: [
-      {speaker: "มายด์", text: "นี่ก็สำคัญนะ รู้จักไหม? 📚"}
-    ],
-    question: "หมวด 300 ในระบบ DDC หมายถึงอะไร?",
-    choices: [
-      {text: "สังคมศาสตร์", correct: true},
-      {text: "เทคโนโลยี", correct: false},
-      {text: "วิทยาศาสตร์", correct: false},
-      {text: "ศิลปะ", correct: false}
-    ],
-    hint: "คำใบ้: เกี่ยวกับมนุษย์และสังคม",
-    correctResponse: "เก่งมาก! เธอมีความรู้เยอะนะ! 🌟",
-    wrongResponse: "ไม่ใช่แล้ว ลองใหม่อีกครั้งนะ!"
-  },
-  {
-    bg: "https://cdn.pixabay.com/photo/2016/11/20/09/08/books-1842306_1280.jpg",
-    dialog: [
-      {speaker: "มายด์", text: "ข้อถัดไป สู้ๆ นะ! 💪"}
-    ],
-    question: "หมวด 600 ของ DDC หมายถึงอะไร?",
-    choices: [
-      {text: "เทคโนโลยีและวิทยาศาสตร์ประยุกต์", correct: true},
-      {text: "ประวัติศาสตร์", correct: false},
-      {text: "ศิลปะ", correct: false},
-      {text: "สุขภาพ", correct: false}
-    ],
-    hint: "คำใบ้: เกี่ยวกับเทคโนโลยีและการประยุกต์ใช้",
-    correctResponse: "ตอบถูก! เธอสุดยอดจริงๆ! 🎉",
-    wrongResponse: "ผิดจ้า พยายามอีกนะ!"
-  },
-  {
-    bg: "https://cdn.pixabay.com/photo/2017/03/15/19/37/books-2142206_960_720.jpg",
-    dialog: [
-      {speaker: "มายด์", text: "อย่าท้อกับข้อยากนะ! 🌈"}
-    ],
-    question: "หมวด 800 ของ DDC หมายถึงอะไร?",
-    choices: [
-      {text: "วรรณกรรม", correct: true},
-      {text: "สุขภาพ", correct: false},
-      {text: "ปรัชญา", correct: false},
-      {text: "เทคโนโลยี", correct: false}
-    ],
-    hint: "คำใบ้: เกี่ยวกับงานเขียนและวรรณกรรม",
-    correctResponse: "เก่งจริงๆ! รักเลย 💖",
-    wrongResponse: "ผิดแล้วจ้า ลองใหม่ๆ"
-  },
-  {
-    bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_1280.jpg",
-    dialog: [
-      {speaker: "มายด์", text: "คำถามสุดท้ายแล้ว! สู้ๆ นะ! ✨"}
-    ],
-    question: "หมวด 900 ของ DDC หมายถึงอะไร?",
-    choices: [
-      {text: "ภูมิศาสตร์และประวัติศาสตร์", correct: true},
-      {text: "ศิลปะ", correct: false},
-      {text: "วิทยาศาสตร์", correct: false},
-      {text: "สังคมศาสตร์", correct: false}
-    ],
-    hint: "คำใบ้: เกี่ยวกับสถานที่และประวัติศาสตร์",
-    correctResponse: "ดีมาก! เธอผ่านด่านนี้ไปได้! 🎉",
-    wrongResponse: "ผิดจ้า ลองอีกทีนะ!"
-  }
-];
+    {
+      bg: "https://cdn.pixabay.com/photo/2019/09/22/21/06/stairs-4496960_1280.jpg",
+      dialog: [
+        {speaker: "มายด์", text: "ไง~ ยินดีต้อนรับสู่โลกแห่งการจัดหนังสือนะ 💕"},
+        {speaker: "มายด์", text: "เราจะเริ่มด้วยคำถามเบาๆก่อนนะ พร้อมหรือยัง? 😊"}
+      ],
+      question: "ทำไมเราต้องจัดหมู่หนังสือในห้องสมุดด้วยล่ะ?",
+      choices: [
+        {text: "เพื่อให้ค้นหาหนังสือได้ง่ายและรวดเร็ว", correct: true},
+        {text: "เพราะอยากให้ห้องสมุดดูมีสีสัน", correct: false},
+        {text: "เพราะจะทำให้หนังสือหายากขึ้น", correct: false},
+        {text: "เพราะเป็นแฟชั่นใหม่ของห้องสมุด", correct: false}
+      ],
+      hint: "คำใบ้: เพื่อความสะดวกและรวดเร็วในการค้นหา",
+      correctResponse: "ใช่เลย! แบบนี้ฉันชอบ 💖",
+      wrongResponse: "เอ๊ะ... ลองคิดอีกทีน้า~"
+    },
+    // เพิ่ม stages ต่อไปตามต้องการ ...
+  ];
 
   function setBackground(url) {
     gameContainer.style.backgroundImage = `url(${url})`;
@@ -395,133 +254,92 @@
     choicesBox.innerHTML = "";
   }
 
-  function disableChoices() {
-    const btns = choicesBox.querySelectorAll('button');
-    btns.forEach(b => b.disabled = true);
-  }
-
-  function showFeedback(correct) {
-    if(correct) {
-      dialogBox.style.animation = 'correctFlash 1s ease';
+  function showDialog() {
+    if (dialogIndex < stages[currentStage].dialog.length) {
+      const { speaker, text } = stages[currentStage].dialog[dialogIndex];
+      dialogBox.innerHTML = `<div class="speaker">${speaker}:</div>${text}`;
+      dialogIndex++;
     } else {
-      dialogBox.style.animation = 'wrongFlash 1s ease';
-    }
-    setTimeout(() => dialogBox.style.animation = '', 1000);
-  }
-
-  function showDialog(stage, index) {
-    const d = stage.dialog[index];
-    if (!d) {
-      // เมื่อจบ dialog ให้แสดงคำถาม
       showQuestion();
-      return;
     }
-    dialogBox.innerHTML = `<div class="speaker">${d.speaker}:</div><div>${d.text.replace("{playerName}", playerName)}</div>`;
-    dialogIndex++;
   }
 
   function showQuestion() {
-    const stage = stages[currentStage];
-    dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
     clearChoices();
-    hintUsed = false;
-
-    // เริ่มจับเวลา 10 วินาที
-    if (answerTimeout) clearTimeout(answerTimeout);
-    answerTimeout = setTimeout(() => {
-      disableChoices();
-      wrongSound.play();
-      showFeedback(false);
-      dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">เวลาหมด! ${stage.wrongResponse}</div>`;
-      // ไม่ลบคะแนน เพราะคำขอ user ไม่ให้ลบ
-      setTimeout(nextStage, 2000);
-    }, 10000);
-
-    const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5);
-    shuffledChoices.forEach(choice => {
-      const btn = document.createElement("button");
+    dialogBox.innerHTML = `<strong>คำถาม:</strong> ${stages[currentStage].question}`;
+    stages[currentStage].choices.forEach((choice, idx) => {
+      const btn = document.createElement('button');
       btn.textContent = choice.text;
-      btn.onclick = () => {
-        if (answerTimeout) {
-          clearTimeout(answerTimeout);
-          answerTimeout = null;
-        }
-        disableChoices();
-        if (choice.correct) {
-          correctSound.play(); // เล่นเสียงถูก
-          score += 1;
-          updateScore();
-          showFeedback(true);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
-          setTimeout(nextStage, 2000);
-        } else {
-          wrongSound.play(); // เล่นเสียงผิด
-          // ไม่ลบคะแนนเมื่อผิด ตามคำขอ
-          updateScore();
-          showFeedback(false);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
-          setTimeout(nextStage, 2000);
-        }
-      };
+      btn.addEventListener('click', () => handleAnswer(idx));
       choicesBox.appendChild(btn);
     });
+  }
 
-    // ปุ่มขอคำใบ้
-    const hintBtn = document.createElement("button");
-    hintBtn.textContent = "ขอคำใบ้ 💡";
-    hintBtn.style.backgroundColor = "#3a8fbd";
-    hintBtn.style.boxShadow = "0 4px 8px #3a8fbd88";
-    hintBtn.onclick = () => {
-      if (!hintUsed && stage.hint) {
-        hintUsed = true;
-        alert(`คำใบ้: ${stage.hint}`);
-        hintBtn.disabled = true;
+  function handleAnswer(choiceIdx) {
+    const isCorrect = stages[currentStage].choices[choiceIdx].correct;
+    clearChoices();
+    if (isCorrect) {
+      dialogBox.textContent = stages[currentStage].correctResponse;
+      score++;
+      updateScore();
+      correctSound.play();
+    } else {
+      dialogBox.textContent = stages[currentStage].wrongResponse;
+      wrongSound.play();
+    }
+
+    // ปุ่ม Next ด่าน
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = currentStage < stages.length - 1 ? 'ถัดไป' : 'จบเกม';
+    nextBtn.style.marginTop = '15px';
+    nextBtn.style.padding = '12px 20px';
+    nextBtn.style.borderRadius = '14px';
+    nextBtn.style.border = 'none';
+    nextBtn.style.backgroundColor = '#d6336c';
+    nextBtn.style.color = 'white';
+    nextBtn.style.cursor = 'pointer';
+    nextBtn.addEventListener('click', () => {
+      if(currentStage < stages.length - 1) {
+        currentStage++;
+        dialogIndex = 0;
+        setBackground(stages[currentStage].bg);
+        showDialog();
+      } else {
+        showEndScreen();
       }
-    };
-    if (!stage.hint) {
-      hintBtn.disabled = true;
-    }
-    choicesBox.appendChild(hintBtn);
-
-    // ปุ่มเล่นใหม่
-    const restartBtn = document.createElement("button");
-    restartBtn.textContent = "เล่นใหม่ 🔄";
-    restartBtn.style.backgroundColor = "#6ab04c";
-    restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
-    restartBtn.onclick = () => {
-      location.reload();
-    };
-    choicesBox.appendChild(restartBtn);
+    });
+    choicesBox.appendChild(nextBtn);
   }
 
-  function nextStage() {
-    currentStage++;
-    dialogIndex = 0;
-    if(currentStage >= stages.length) {
-      // เกมจบ
-      dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div>จบเกมแล้ว! ${playerName} ได้คะแนนทั้งหมด ${score} คะแนน 🎉🎉🎉 ขอบคุณที่เล่นนะ!</div>`;
-      clearChoices();
-      return;
-    }
-    setBackground(stages[currentStage].bg);
-    showDialog(stages[currentStage], dialogIndex);
+  function showEndScreen() {
+    dialogBox.innerHTML = `🎉 จบเกมแล้ว! <br> ขอบคุณที่เล่นนะ ${playerName}! คะแนนรวมของคุณคือ ${score} / ${stages.length}`;
+    choicesBox.innerHTML = "";
   }
 
-  startBtn.addEventListener('click', () => {
-    const name = playerNameInput.value.trim();
-    if(name === '') {
-      alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
-      return;
+  dialogBox.addEventListener('click', () => {
+    // ถ้ากำลังแสดง dialog ให้แสดงข้อความถัดไป
+    if(choicesBox.children.length === 0) {
+      showDialog();
     }
-    playerName = name;
-    startScreen.style.display = 'none';
-    setBackground(stages[0].bg);
-    showDialog(stages[0], dialogIndex);
   });
 
-  // เริ่มต้น
-  updateScore();
+  startBtn.addEventListener('click', () => {
+    if(playerNameInput.value.trim() === '') {
+      alert('กรุณากรอกชื่อก่อนเริ่มเกมนะ!');
+      playerNameInput.focus();
+      return;
+    }
+    playerName = playerNameInput.value.trim();
+    startScreen.style.display = 'none';
+    gameContainer.style.display = 'flex';
+    setBackground(stages[0].bg);
+    updateScore();
+    dialogIndex = 0;
+    showDialog();
+  });
 
+  // เริ่มซ่อน game-container ก่อนเริ่มเกม
+  gameContainer.style.display = 'none';
 </script>
 
 </body>
