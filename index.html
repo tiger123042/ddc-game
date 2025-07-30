@@ -492,26 +492,33 @@
     currentStage++;
     dialogIndex = 0;
     clearChoices();
-    if (currentStage >= stages.length) {
-      sendScoreToGoogleSheet(playerName, score);
-      dialogBox.innerHTML = `
-        <div class="speaker">มายด์:</div>
-        <div>🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณได้คะแนน <strong>${score}</strong> คะแนนนะคะ~ ขอบคุณที่เล่นด้วยกัน 💖</div>
-      `;
-      setBackground("https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg");
-      clearChoices();
-      const restartBtn = document.createElement("button");
-      restartBtn.textContent = "เล่นใหม่ 🔄";
-      restartBtn.style.backgroundColor = "#6ab04c";
-      restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
-      restartBtn.onclick = () => {
-        location.reload();
-      };
-      choicesBox.appendChild(restartBtn);
-    } else {
-      setBackground(stages[currentStage].bg);
-      showDialog();
-    }
+   if (currentStage >= stages.length) {
+  sendScoreToGoogleSheet(playerName, score);
+  let endingMessage = "";
+  if (score >= 8) {
+    endingMessage = `🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณคือสุดยอดนักจัดหนังสือ! มายด์อยากชวนคุณไปอ่านหนังสือด้วยกันเลยล่ะ~ 💖`;
+  } else if (score >= 5) {
+    endingMessage = `😊 เก่งมากเลย, <strong>${playerName}</strong>! คุณรู้เรื่องการจัดหมู่หนังสือดีทีเดียว ไว้เจอกันใหม่นะ~`;
+  } else {
+    endingMessage = `😅 ไม่เป็นไรเลย, <strong>${playerName}</strong>! ลองเล่นใหม่ดูอีกครั้งน้า มายด์เป็นกำลังใจให้อยู่เสมอ~ 💪`;
+  }
+
+  dialogBox.innerHTML = `
+    <div class="speaker">มายด์:</div>
+    <div>${endingMessage}</div>
+  `;
+
+  setBackground("https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg");
+  clearChoices();
+  const restartBtn = document.createElement("button");
+  restartBtn.textContent = "เล่นใหม่ 🔄";
+  restartBtn.style.backgroundColor = "#6ab04c";
+  restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
+  restartBtn.onclick = () => {
+    location.reload();
+  };
+  choicesBox.appendChild(restartBtn);
+}
   }
 
   function startGame() {
