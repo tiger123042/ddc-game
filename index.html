@@ -242,7 +242,6 @@
   let currentStage = 0;
   let dialogIndex = 0;
   let score = 0;
-  let hintUsed = false;
 
  const stages = [
   {
@@ -258,7 +257,6 @@
       {text: "ใช้เขียนบทวิจารณ์หนังสือ", correct: false},
       {text: "ระบบชำระเงินค่าหนังสือ", correct: false}
     ],
-    hint: "คำใบ้: เพื่อช่วยจัดระเบียบและค้นหา",
     correctResponse: "ถูกต้อง! ระบบนี้ช่วยจัดหมวดหมู่หนังสือได้ดีมากค่ะ 💖",
     wrongResponse: "ลองคิดอีกทีนะ ระบบนี้เกี่ยวกับอะไรในห้องสมุด?"
   },
@@ -274,7 +272,6 @@
       {text: "ประวัติศาสตร์โลก", correct: false},
       {text: "วิทยาศาสตร์", correct: false}
     ],
-    hint: "เกี่ยวกับความรู้ทั่วไปและสารานุกรม",
     correctResponse: "ใช่แล้ว! หมวด 000 คือความรู้ทั่วไปค่ะ 😄",
     wrongResponse: "ผิดนะ ลองใหม่ หมวดนี้คือเรื่องอะไร?"
   },
@@ -290,7 +287,6 @@
       {text: "เทคโนโลยี", correct: false},
       {text: "สุขภาพ", correct: false}
     ],
-    hint: "เกี่ยวกับความคิดและจิตใจ",
     correctResponse: "เก่งมาก! หมวด 100 คือปรัชญาและจิตวิทยาค่ะ 😊",
     wrongResponse: "ผิดค่ะ ลองใหม่นะ"
   },
@@ -306,7 +302,6 @@
       {text: "เทคโนโลยี", correct: false},
       {text: "ประวัติศาสตร์", correct: false}
     ],
-    hint: "เกี่ยวกับความเชื่อและศาสนา",
     correctResponse: "ใช่แล้วค่ะ หมวด 200 คือเรื่องศาสนา 😊",
     wrongResponse: "ไม่ใช่นะ ลองใหม่อีกครั้ง"
   },
@@ -322,7 +317,6 @@
       {text: "วิทยาศาสตร์", correct: false},
       {text: "สุขภาพ", correct: false}
     ],
-    hint: "เกี่ยวกับสังคมและมนุษย์",
     correctResponse: "ดีมาก! หมวด 300 คือสังคมศาสตร์ค่ะ 🎉",
     wrongResponse: "ผิดนะ ลองอีกครั้ง"
   },
@@ -338,7 +332,6 @@
       {text: "กฎหมาย", correct: false},
       {text: "สุขภาพ", correct: false}
     ],
-    hint: "เกี่ยวกับการพูดและภาษา",
     correctResponse: "ใช่เลย! หมวด 400 คือภาษาและการสื่อสารค่ะ 👍",
     wrongResponse: "ผิดจ้า ลองใหม่อีกครั้ง"
   },
@@ -354,7 +347,6 @@
       {text: "ศิลปะ", correct: false},
       {text: "สังคมศาสตร์", correct: false}
     ],
-    hint: "เกี่ยวกับธรรมชาติและวิทยาศาสตร์",
     correctResponse: "เยี่ยม! หมวด 500 คือวิทยาศาสตร์ค่ะ 🎉",
     wrongResponse: "ผิดนะ ลองใหม่นะ"
   },
@@ -370,7 +362,6 @@
       {text: "ประวัติศาสตร์", correct: false},
       {text: "สุขภาพ", correct: false}
     ],
-    hint: "เกี่ยวกับเทคโนโลยีและการประยุกต์ใช้",
     correctResponse: "ถูกต้อง! หมวด 600 คือเทคโนโลยีค่ะ 👍",
     wrongResponse: "ผิดค่ะ ลองใหม่"
   },
@@ -386,7 +377,6 @@
       {text: "ประวัติศาสตร์", correct: false},
       {text: "วิทยาศาสตร์", correct: false}
     ],
-    hint: "เกี่ยวกับศิลปะและความคิดสร้างสรรค์",
     correctResponse: "เยี่ยม! หมวด 700 คือศิลปะค่ะ 🎉",
     wrongResponse: "ผิดนะ ลองอีกครั้ง"
   },
@@ -402,7 +392,6 @@
       {text: "ศิลปะ", correct: false},
       {text: "สุขภาพ", correct: false}
     ],
-    hint: "เกี่ยวกับสถานที่และประวัติศาสตร์",
     correctResponse: "ถูกต้อง! หมวด 900 คือภูมิศาสตร์และประวัติศาสตร์ค่ะ 🎉",
     wrongResponse: "ผิดจ้า ลองอีกทีนะ"
   }
@@ -427,13 +416,13 @@
 
   function showFeedback(isCorrect) {
     if (isCorrect) {
-      dialogBox.style.animation = "correctFlash 1s ease";
+      dialogBox.style.animation = 'correctFlash 1.2s';
     } else {
-      dialogBox.style.animation = "wrongFlash 1s ease";
+      dialogBox.style.animation = 'wrongFlash 1.2s';
     }
     setTimeout(() => {
-      dialogBox.style.animation = "";
-    }, 1000);
+      dialogBox.style.animation = '';
+    }, 1200);
   }
 
   let questionTimer = null;
@@ -444,11 +433,9 @@
     timerDisplay.textContent = `เวลาที่เหลือ: ${timeLeft} วินาที`;
     countdownInterval = setInterval(() => {
       timeLeft--;
+      timerDisplay.textContent = `เวลาที่เหลือ: ${timeLeft} วินาที`;
       if (timeLeft <= 0) {
         clearInterval(countdownInterval);
-        timerDisplay.textContent = 'หมดเวลาแล้ว!';
-      } else {
-        timerDisplay.textContent = `เวลาที่เหลือ: ${timeLeft} วินาที`;
       }
     }, 1000);
   }
@@ -458,12 +445,36 @@
     timerDisplay.textContent = '';
   }
 
+  function nextStage() {
+    currentStage++;
+    if (currentStage >= stages.length) {
+      endGame();
+    } else {
+      dialogIndex = 0;
+      showDialog();
+    }
+  }
+
+  function showDialog() {
+    clearChoices();
+    stopCountdown();
+    const stage = stages[currentStage];
+    setBackground(stage.bg);
+    if (dialogIndex < stage.dialog.length) {
+      const line = stage.dialog[dialogIndex];
+      dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
+      dialogIndex++;
+      setTimeout(showDialog, 2200);
+    } else {
+      showQuestion();
+    }
+  }
+
   function showQuestion() {
     const stage = stages[currentStage];
     setBackground(stage.bg);
     dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
     clearChoices();
-    hintUsed = false;
 
     // สุ่มคำตอบ
     const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5);
@@ -496,23 +507,6 @@
       choicesBox.appendChild(btn);
     });
 
-    // ปุ่มขอคำใบ้
-    const hintBtn = document.createElement("button");
-    hintBtn.textContent = "ขอคำใบ้ 💡";
-    hintBtn.style.backgroundColor = "#3a8fbd";
-    hintBtn.style.boxShadow = "0 4px 8px #3a8fbd88";
-    hintBtn.onclick = () => {
-      if (!hintUsed && stage.hint) {
-        hintUsed = true;
-        alert(`คำใบ้: ${stage.hint}`);
-        hintBtn.disabled = true;
-      }
-    };
-    if (!stage.hint) {
-      hintBtn.disabled = true;
-    }
-    choicesBox.appendChild(hintBtn);
-
     // ปุ่มเล่นใหม่
     const restartBtn = document.createElement("button");
     restartBtn.textContent = "เล่นใหม่ 🔄";
@@ -533,44 +527,22 @@
     }, 10000);
   }
 
-  function nextStage() {
-    currentStage++;
-    if (currentStage >= stages.length) {
-      showSummary();
-    } else {
-      showDialog();
-    }
-  }
-
-  function showDialog() {
-    const stage = stages[currentStage];
-    setBackground(stage.bg);
-    dialogIndex = 0;
-    dialogBox.innerHTML = "";
+  function endGame() {
     clearChoices();
+    stopCountdown();
     timerDisplay.textContent = '';
-    showNextDialogLine();
+    dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div>จบเกมแล้วค่ะ ${playerName} 🎉 คะแนนรวมของคุณคือ ${score} จาก ${stages.length} คำถาม</div>`;
+    const restartBtn = document.createElement("button");
+    restartBtn.textContent = "เล่นใหม่ 🔄";
+    restartBtn.style.backgroundColor = "#6ab04c";
+    restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
+    restartBtn.onclick = () => {
+      location.reload();
+    };
+    choicesBox.appendChild(restartBtn);
   }
 
-  function showNextDialogLine() {
-    const stage = stages[currentStage];
-    if (dialogIndex < stage.dialog.length) {
-      const line = stage.dialog[dialogIndex];
-      dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
-      dialogIndex++;
-      setTimeout(showNextDialogLine, 2800);
-    } else {
-      showQuestion();
-    }
-  }
-
-  function showSummary() {
-    dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div>จบเกมแล้วค่ะ คุณ <strong>${playerName}</strong> ได้คะแนนทั้งหมด <strong>${score}</strong> คะแนน 🎉🎉 ขอบคุณที่เล่นเกมนะคะ!</div>`;
-    clearChoices();
-    timerDisplay.textContent = '';
-  }
-
-  startBtn.onclick = () => {
+  startBtn.addEventListener('click', () => {
     const name = playerNameInput.value.trim();
     if (name.length === 0) {
       alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
@@ -580,12 +552,8 @@
     playerName = name;
     startScreen.style.display = 'none';
     showDialog();
-  };
-
-  // โหลดเสียงแบบเงียบสำหรับป้องกัน delay
-  correctSound.load();
-  wrongSound.load();
-
+    updateScore();
+  });
 </script>
 </body>
 </html>
