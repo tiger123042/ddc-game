@@ -1,288 +1,561 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>เกมจัดหมู่หนังสือ DDC</title>
-  <style>
-    body {
-      font-family: 'Kanit', sans-serif;
-      background: #f0f8ff;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>จัดหมู่หนังสือ DDC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
+  body {
+    margin: 0;
+    font-family: 'Kanit', sans-serif;
+    background: #fef6e4 url('https://cdn.pixabay.com/photo/2016/11/29/10/07/notebook-1869347_1280.jpg') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    color: #3b2f2f;
+  }
+  h1 {
+    margin: 20px;
+    color: #d6336c;
+    text-shadow: 1px 1px 2px #fff;
+    font-size: 2.4rem;
+    text-align: center;
+  }
+  #game-container {
+    width: 90%;
+    max-width: 700px;
+    height: 70vh;
+    background: #fff8f0;
+    border-radius: 25px;
+    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    cursor: default;
+  }
+  #game-container::before {
+    content: "";
+    position: absolute;
+    top: 10px; bottom: 10px; left: 10px; right: 10px;
+    border: 3px dashed #d18ca4;
+    border-radius: 25px;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    opacity: 0.3;
+  }
+  #dialog-box {
+    position: relative;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    padding: 22px 24px 22px 220px; /* เผื่อที่วางภาพ */
+    font-size: 1.25rem;
+    line-height: 1.6;
+    max-height: 50%;
+    overflow-y: auto;
+    box-shadow: inset 0 0 12px #d6336c33;
+    color: #4b2e49;
+    transition: background-color 0.3s ease;
+    z-index: 10;
+  }
+  .speaker {
+    font-weight: bold;
+    color: #d6336c;
+    margin-bottom: 6px;
+  }
+  #choices {
+    margin-top: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    z-index: 20;
+  }
+  #choices button {
+    flex: 1 1 45%;
+    background: #d6336c;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 14px;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: background 0.25s;
+    box-shadow: 0 4px 8px #d6336c88;
+  }
+  #choices button:hover:not(:disabled) {
+    background: #a6284a;
+    box-shadow: 0 6px 12px #a6284aaa;
+  }
+  #choices button:disabled {
+    background: #ccc;
+    color: #666;
+    cursor: default;
+    box-shadow: none;
+  }
+  #score-display {
+    margin-top: 14px;
+    font-weight: 700;
+    text-align: center;
+    font-size: 1.3rem;
+    color: #d6336c;
+    text-shadow: 1px 1px 3px #fff;
+    min-height: 30px;
+    user-select: none;
+    z-index: 20;
+  }
+  #character-img {
+    position: absolute;
+    top: 120px;
+    left: 40px;
+    width: 280px;
+    height: 420px;
+    border-radius: 0;
+    box-shadow: none;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+    z-index: 5;
+    filter: none;
+    background: transparent;
+    opacity: 1;
+    mix-blend-mode: normal;
+  }
+  #start-screen {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    font-size: 1.2rem;
+    color: #6b3a54;
+    padding: 20px;
+  }
+  #start-screen h2 {
+    margin-bottom: 16px;
+    color: #d6336c;
+    font-size: 2rem;
+    text-shadow: 1px 1px 2px #fff;
+  }
+  #player-name-input {
+    font-size: 1.2rem;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 2px solid #d6336c;
+    width: 280px;
+    text-align: center;
+    outline-color: #a6284a;
+    margin-bottom: 20px;
+  }
+  #start-btn {
+    background: #d6336c;
+    border: none;
+    border-radius: 16px;
+    padding: 14px 30px;
+    font-size: 1.15rem;
+    color: white;
+    cursor: pointer;
+    box-shadow: 0 5px 10px #d6336cbb;
+    transition: background 0.3s;
+  }
+  #start-btn:hover {
+    background: #a6284a;
+    box-shadow: 0 7px 14px #a6284aaa;
+  }
+  @keyframes correctFlash {
+    0%, 100% { background-color: rgba(144,238,144, 0.3); }
+    50% { background-color: rgba(34,139,34, 0.6); }
+  }
+  @keyframes wrongFlash {
+    0%, 100% { background-color: rgba(255,182,193, 0.3); }
+    50% { background-color: rgba(220,20,60, 0.6); }
+  }
+  @media (max-width: 600px) {
+    #choices button {
+      flex: 1 1 100%;
     }
-    .container {
-      max-width: 500px;
-      margin-top: 20px;
-      background: white;
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    #dialog-box {
+      padding-left: 140px;
+      font-size: 1.1rem;
+      max-height: 55%;
     }
-    h1 {
-      text-align: center;
-      color: #1e90ff;
+    #character-img {
+      width: 140px;
+      height: 180px;
+      top: 20px;
+      left: 8px;
+    
     }
-    .character {
-      text-align: center;
-    }
-    .character img {
-      max-width: 150px;
-      height: auto;
-    }
-    #dialog {
-      margin: 10px 0;
-      background: #fff8dc;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    #question {
-      font-weight: bold;
-      margin-bottom: 10px;
-    }
-    .choices {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    button.choice {
-      background: #e0f0ff;
-      border: 2px solid #1e90ff;
-      border-radius: 10px;
-      padding: 10px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    button.choice:hover {
-      background: #b0e0ff;
-    }
-    .feedback {
-      font-weight: bold;
-      text-align: center;
-      margin: 10px 0;
-    }
-    #score {
-      text-align: center;
-      margin-top: 10px;
-      font-size: 18px;
-    }
-    #result {
-      text-align: center;
-      display: none;
-      margin-top: 20px;
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>🧠 เกมจัดหมู่ DDC</h1>
-    <div class="character">
-      <img src="https://cdn.pixabay.com/photo/2023/11/12/08/47/woman-8382546_1280.png" alt="มายด์">
-    </div>
-    <div id="dialog">
-      <div id="question">คำถามจะปรากฏที่นี่</div>
-      <div class="choices" id="choices"></div>
-      <div class="feedback" id="feedback"></div>
-    </div>
-    <div id="score">คะแนน: 0</div>
-    <div id="result">
-      <h2>🎉 เกมจบแล้ว!</h2>
-      <p>คุณได้ <span id="final-score"></span> คะแนน</p>
-      <button onclick="location.reload()">เล่นอีกครั้ง</button>
-    </div>
-  </div>
+<h1>📚 จัดหมู่หนังสือ DDC</h1>
 
-  <script>
-    const stages = [
-      {
-        question: "หมวด 100 ของระบบดิวอี้เกี่ยวข้องกับอะไร?",
-        choices: [
-          { text: "ปรัชญาและจิตวิทยา", correct: true },
-          { text: "ศาสนา", correct: false },
-          { text: "สังคมศาสตร์", correct: false },
-          { text: "ภาษา", correct: false }
-        ],
-        correctResponse: "ใช่เลย! 100 คือ ปรัชญาและจิตวิทยา",
-        wrongResponse: "ยังไม่ถูกนะ ลองข้อต่อไปดูน้า~"
+<div id="game-container">
+  <img id="character-img" src="mind.png" alt="มายด์" />
+  <div id="dialog-box"></div>
+  <div id="choices"></div>
+  <div id="score-display">คะแนน: 0</div>
+</div>
+
+<div id="start-screen">
+  <h2>กรุณากรอกชื่อของคุณก่อนเริ่มเกม</h2>
+  <input type="text" id="player-name-input" placeholder="ชื่อของคุณ..." />
+  <button id="start-btn">เริ่มเกม</button>
+</div>
+
+<audio id="correct-sound" src="correct.mp3" preload="auto"></audio>
+<audio id="wrong-sound" src="wrong.mp3" preload="auto"></audio>
+<script>
+  const dialogBox = document.getElementById('dialog-box');
+  const choicesBox = document.getElementById('choices');
+  const scoreDisplay = document.getElementById('score-display');
+  const gameContainer = document.getElementById('game-container');
+  const startScreen = document.getElementById('start-screen');
+  const playerNameInput = document.getElementById('player-name-input');
+  const startBtn = document.getElementById('start-btn');
+  
+  const correctSound = document.getElementById('correct-sound');
+  const wrongSound = document.getElementById('wrong-sound');
+
+  let playerName = '';
+  let currentStage = 0;
+  let dialogIndex = 0;
+  let score = 0;
+  let hintUsed = false;
+
+  const stages = [
+  {
+    bg: "https://cdn.pixabay.com/photo/2019/09/22/21/06/stairs-4496960_1280.jpg",
+    dialog: [
+      {speaker: "มายด์", text: "ไง~ ยินดีต้อนรับสู่โลกแห่งการจัดหนังสือนะ 💕"},
+      {speaker: "มายด์", text: "เราจะเริ่มด้วยคำถามเบาๆก่อนนะ พร้อมหรือยัง? 😊"}
+    ],
+    question: "ทำไมเราต้องจัดหมู่หนังสือในห้องสมุดด้วยล่ะ?",
+    choices: [
+      {text: "เพื่อให้ค้นหาหนังสือได้ง่ายและรวดเร็ว", correct: true},
+      {text: "เพราะอยากให้ห้องสมุดดูมีสีสัน", correct: false},
+      {text: "เพราะจะทำให้หนังสือหายากขึ้น", correct: false},
+      {text: "เพราะเป็นแฟชั่นใหม่ของห้องสมุด", correct: false}
+    ],
+    hint: "คำใบ้: เพื่อความสะดวกและรวดเร็วในการค้นหา",
+    correctResponse: "ใช่เลย! แบบนี้ฉันชอบ 💖",
+    wrongResponse: "เอ๊ะ... ลองคิดอีกทีน้า~"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_1280.jpg",
+    dialog: [
+      {speaker: "มายด์", text: "ต่อไป... ถ้าจำไม่ผิด หมวด 500 คือ...? 🤔"}
+    ],
+    question: "หมวด 500 ในระบบ DDC คือเรื่องอะไร?",
+    choices: [
+      {text: "วิทยาศาสตร์และธรรมชาติ", correct: true},
+      {text: "การเมือง", correct: false},
+      {text: "ประวัติศาสตร์", correct: false},
+      {text: "เทคโนโลยี", correct: false}
+    ],
+    hint: "คำใบ้: เกี่ยวข้องกับธรรมชาติและวิทยาศาสตร์",
+    correctResponse: "เก่งมากเลย! ฉันปลื้มสุดๆ 😳",
+    wrongResponse: "อุ๊ย ไม่ใช่นะ ลองใหม่นะ~"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2023/01/26/02/15/books-7744938_1280.jpg",
+    dialog: [
+      {speaker: "มายด์", text: "แล้วถ้าไม่มีระบบ DDC จะเกิดอะไรขึ้นน้า? 🧐"}
+    ],
+    question: "เหตุผลที่ต้องใช้ระบบ DDC คืออะไร?",
+    choices: [
+      {text: "เพื่อให้ค้นหาง่ายและจัดเก็บสะดวก", correct: true},
+      {text: "เพื่อให้หนังสือราคาสูงขึ้น", correct: false},
+      {text: "เพื่อให้หนังสืออ่านยากขึ้น", correct: false},
+      {text: "เพราะครูสั่งมา", correct: false}
+    ],
+    hint: "คำใบ้: เพื่อให้การจัดเก็บและค้นหาง่ายขึ้น",
+    correctResponse: "ตอบดีมากเลย~ นี่แหละคนที่เข้าใจฉัน 😍",
+    wrongResponse: "อื้ม... ไม่ใช่แน่ๆ ลองดูดีๆอีกทีนะ"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2015/07/31/11/45/library-869061_1280.jpg",
+    dialog: [
+      {speaker: "มายด์", text: "สุดท้ายแล้วจ้า~ 💫 ถ้าเธอตอบได้ เราอาจจะไปอ่านหนังสือด้วยกันก็ได้นะ~"}
+    ],
+    question: "หมวด 700 ของ DDC คืออะไร?",
+    choices: [
+      {text: "ศิลปะและการออกแบบ", correct: true},
+      {text: "กฎหมาย", correct: false},
+      {text: "วิทยาศาสตร์", correct: false},
+      {text: "สุขภาพ", correct: false}
+    ],
+    hint: "คำใบ้: หมวดนี้เกี่ยวกับความคิดสร้างสรรค์และศิลปะ",
+    correctResponse: "ว้าว~ เธอนี่แหละคู่หูอ่านหนังสือในฝันของฉันเลย 😘",
+    wrongResponse: "อือ... ไม่ใช่นะ ลองตอบใหม่สิจ๊ะ"
+  },
+  // เพิ่มคำถามใหม่ 6 ข้อต่อไปนี้
+  {
+    bg: "https://cdn.pixabay.com/photo/2020/07/24/09/49/books-5433432_1280.jpg",
+    dialog: [
+      {speaker: "มายด์", text: "คำถามนี้ยากขึ้นอีกนิดนะ 😉"}
+    ],
+    question: "หมวด 100 ในระบบ DDC คือเรื่องอะไร?",
+    choices: [
+      {text: "ปรัชญาและจิตวิทยา", correct: true},
+      {text: "ศิลปะ", correct: false},
+      {text: "ประวัติศาสตร์", correct: false},
+      {text: "เทคโนโลยี", correct: false}
+    ],
+    hint: "คำใบ้: เกี่ยวกับความคิดและจิตใจ",
+    correctResponse: "ถูกต้อง! เธอฉลาดมากเลย 😍",
+    wrongResponse: "ผิดจ้า ลองใหม่อีกทีนะ!"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2014/10/14/20/14/library-488690_1280.jpg",
+    dialog: [
+      {speaker: "มายด์", text: "นี่ก็สำคัญนะ รู้จักไหม? 📚"}
+    ],
+    question: "หมวด 300 ในระบบ DDC หมายถึงอะไร?",
+    choices: [
+      {text: "สังคมศาสตร์", correct: true},
+      {text: "เทคโนโลยี", correct: false},
+      {text: "วิทยาศาสตร์", correct: false},
+      {text: "ศิลปะ", correct: false}
+    ],
+    hint: "คำใบ้: เกี่ยวกับมนุษย์และสังคม",
+    correctResponse: "เก่งมาก! เธอมีความรู้เยอะนะ! 🌟",
+    wrongResponse: "ไม่ใช่แล้ว ลองใหม่อีกครั้งนะ!"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2016/11/20/09/08/books-1842306_1280.jpg",
+    dialog: [
+      {speaker: "มายด์", text: "ข้อถัดไป สู้ๆ นะ! 💪"}
+    ],
+    question: "หมวด 600 ของ DDC หมายถึงอะไร?",
+    choices: [
+      {text: "เทคโนโลยีและวิทยาศาสตร์ประยุกต์", correct: true},
+      {text: "ประวัติศาสตร์", correct: false},
+      {text: "ศิลปะ", correct: false},
+      {text: "สุขภาพ", correct: false}
+    ],
+    hint: "คำใบ้: เกี่ยวกับเทคโนโลยีและการประยุกต์ใช้",
+    correctResponse: "ตอบถูก! เธอสุดยอดจริงๆ! 🎉",
+    wrongResponse: "ผิดจ้า พยายามอีกนะ!"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2017/03/15/19/37/books-2142206_960_720.jpg",
+    dialog: [
+      {speaker: "มายด์", text: "อย่าท้อกับข้อยากนะ! 🌈"}
+    ],
+    question: "หมวด 800 ของ DDC หมายถึงอะไร?",
+    choices: [
+      {text: "วรรณกรรม", correct: true},
+      {text: "สุขภาพ", correct: false},
+      {text: "ปรัชญา", correct: false},
+      {text: "เทคโนโลยี", correct: false}
+    ],
+    hint: "คำใบ้: เกี่ยวกับงานเขียนและวรรณกรรม",
+    correctResponse: "เก่งจริงๆ! รักเลย 💖",
+    wrongResponse: "ผิดแล้วจ้า ลองใหม่ๆ"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_1280.jpg",
+    dialog: [
+      {speaker: "มายด์", text: "คำถามสุดท้ายแล้ว! สู้ๆ นะ! ✨"}
+    ],
+    question: "หมวด 900 ของ DDC หมายถึงอะไร?",
+    choices: [
+      {text: "ภูมิศาสตร์และประวัติศาสตร์", correct: true},
+      {text: "ศิลปะ", correct: false},
+      {text: "วิทยาศาสตร์", correct: false},
+      {text: "สังคมศาสตร์", correct: false}
+    ],
+    hint: "คำใบ้: เกี่ยวกับสถานที่และประวัติศาสตร์",
+    correctResponse: "ดีมาก! เธอผ่านด่านนี้ไปได้! 🎉",
+    wrongResponse: "ผิดจ้า ลองอีกทีนะ!"
+  }
+];
+
+  function setBackground(url) {
+    gameContainer.style.backgroundImage = url(${url});
+  }
+
+  function updateScore() {
+    scoreDisplay.textContent = คะแนน: ${score};
+  }
+
+  function clearChoices() {
+    choicesBox.innerHTML = "";
+  }
+
+  function disableChoices() {
+    choicesBox.querySelectorAll("button").forEach(btn => btn.disabled = true);
+  }
+
+  function showFeedback(correct) {
+    if(correct) {
+      dialogBox.style.animation = 'correctFlash 0.6s';
+    } else {
+      dialogBox.style.animation = 'wrongFlash 0.6s';
+    }
+    dialogBox.addEventListener('animationend', () => {
+      dialogBox.style.animation = '';
+    }, { once: true });
+  }
+
+  function sendScoreToGoogleSheet(name, score) {
+    const url = 'https://script.google.com/macros/s/AKfycbyE6A6wP3Xh5J4GPaoVYVkDmMvo2UHENIHBIWBFUYqOBv77aWTcx1fDfFbsyGQIHU-7/exec';
+
+    fetch(url, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json'
       },
-      {
-        question: "หนังสือเรื่อง 'โครงสร้างอะตอม' ควรอยู่ในหมวดใด?",
-        choices: [
-          { text: "500 วิทยาศาสตร์", correct: true },
-          { text: "600 เทคโนโลยี", correct: false },
-          { text: "300 สังคมศาสตร์", correct: false },
-          { text: "900 ประวัติศาสตร์", correct: false }
-        ],
-        correctResponse: "ถูกต้อง! เรื่องอะตอมอยู่ในหมวดวิทยาศาสตร์",
-        wrongResponse: "ผิดนิดนึงน้า เราไปข้อต่อไปกันเถอะ"
-      },
-      {
-        question: "หนังสือเกี่ยวกับ 'การออกแบบเว็บไซต์' จัดอยู่ในหมวดใด?",
-        choices: [
-          { text: "600 เทคโนโลยี", correct: true },
-          { text: "700 ศิลปะ", correct: false },
-          { text: "000 ความรู้ทั่วไป", correct: false },
-          { text: "900 ประวัติศาสตร์", correct: false }
-        ],
-        correctResponse: "เก่งมาก! เทคโนโลยีและวิศวกรรมอยู่ในหมวด 600",
-        wrongResponse: "ไม่เป็นไร ไปลองข้อต่อไปนะ"
-      },
-      {
-        question: "หมวดใดกล่าวถึง 'วรรณกรรมไทย'?",
-        choices: [
-          { text: "800 วรรณกรรม", correct: true },
-          { text: "400 ภาษา", correct: false },
-          { text: "300 สังคมศาสตร์", correct: false },
-          { text: "900 ประวัติศาสตร์", correct: false }
-        ],
-        correctResponse: "เยี่ยม! วรรณกรรมรวมอยู่ในหมวด 800",
-        wrongResponse: "ตอบผิดนิดเดียวเอง ไปต่อกันเถอะ"
-      },
-      {
-        question: "ระบบทศนิยมดิวอี้ถูกสร้างขึ้นโดยใคร?",
-        choices: [
-          { text: "Melvil Dewey", correct: true },
-          { text: "Benjamin Franklin", correct: false },
-          { text: "Isaac Newton", correct: false },
-          { text: "Albert Einstein", correct: false }
-        ],
-        correctResponse: "ถูกต้อง! Melvil Dewey คือผู้พัฒนาระบบนี้",
-        wrongResponse: "ไม่เป็นไรนะ เดี๋ยวก็จำได้!"
-      },
-      {
-        question: "หมวด 200 ในระบบดิวอี้หมายถึงอะไร?",
-        choices: [
-          { text: "ศาสนา", correct: true },
-          { text: "ภาษา", correct: false },
-          { text: "ประวัติศาสตร์", correct: false },
-          { text: "คณิตศาสตร์", correct: false }
-        ],
-        correctResponse: "ใช่เลย! หมวด 200 คือศาสนา",
-        wrongResponse: "ยังไม่ใช่นะ ลองอีกข้อนะ"
-      },
-      {
-        question: "หนังสือ 'คำศัพท์ภาษาอังกฤษ' ควรอยู่ในหมวดใด?",
-        choices: [
-          { text: "400 ภาษา", correct: true },
-          { text: "800 วรรณกรรม", correct: false },
-          { text: "300 สังคม", correct: false },
-          { text: "100 ปรัชญา", correct: false }
-        ],
-        correctResponse: "ถูกต้อง! ภาษาอังกฤษอยู่ในหมวด 400",
-        wrongResponse: "ยังไม่ถูก แต่ไปต่อได้เลย"
-      },
-      {
-        question: "หมวดใดใช้สำหรับหนังสือทั่วไป เช่น สารานุกรม?",
-        choices: [
-          { text: "000 ความรู้ทั่วไป", correct: true },
-          { text: "500 วิทยาศาสตร์", correct: false },
-          { text: "600 เทคโนโลยี", correct: false },
-          { text: "900 ประวัติศาสตร์", correct: false }
-        ],
-        correctResponse: "เก่งมาก! สารานุกรมอยู่ในหมวด 000",
-        wrongResponse: "ผิดนิดเดียว ไปข้อต่อไปเลย!"
-      },
-      {
-        question: "หนังสือเกี่ยวกับ 'การเมืองไทย' ควรอยู่ในหมวดใด?",
-        choices: [
-          { text: "300 สังคมศาสตร์", correct: true },
-          { text: "900 ประวัติศาสตร์", correct: false },
-          { text: "600 เทคโนโลยี", correct: false },
-          { text: "700 ศิลปะ", correct: false }
-        ],
-        correctResponse: "ถูกต้อง! เรื่องการเมืองอยู่ในหมวด 300",
-        wrongResponse: "ยังไม่ใช่น้า ลองข้อต่อไปดู!"
-      },
-      {
-        question: "หมวดใดของ DDC ที่ใช้สำหรับประวัติศาสตร์และภูมิศาสตร์?",
-        choices: [
-          { text: "900", correct: true },
-          { text: "100", correct: false },
-          { text: "500", correct: false },
-          { text: "200", correct: false }
-        ],
-        correctResponse: "ถูกต้อง! หมวด 900 คือ ประวัติศาสตร์และภูมิศาสตร์",
-        wrongResponse: "ไม่เป็นไรนะ เดี๋ยวก็จำได้!"
+      body: JSON.stringify({ name, score })
+    }).catch(err => {
+      console.error('ส่งคะแนนไม่สำเร็จ', err);
+    });
+  }
+
+  function showDialog() {
+    const stage = stages[currentStage];
+    if (dialogIndex < stage.dialog.length) {
+      const line = stage.dialog[dialogIndex];
+      dialogBox.innerHTML = <div class="speaker">${line.speaker}:</div><div>${line.text}</div>;
+      dialogIndex++;
+      setTimeout(showDialog, 2000);
+    } else {
+      showQuestion();
+    }
+  }
+
+let questionTimer = null; // เก็บ ID ตัวจับเวลา
+
+function showQuestion() {
+  const stage = stages[currentStage];
+  dialogBox.innerHTML = <div class="speaker">คำถาม:</div><div>${stage.question}</div>;
+  clearChoices();
+  hintUsed = false;
+
+  const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5);
+  shuffledChoices.forEach(choice => {
+    const btn = document.createElement("button");
+    btn.textContent = choice.text;
+    btn.onclick = () => {
+      if (questionTimer) {
+        clearTimeout(questionTimer); // เคลียร์จับเวลาก่อนถ้ามี
+        questionTimer = null;
       }
-    ];
-
-    let current = 0;
-    let score = 0;
-
-    function showQuestion() {
-      const stage = stages[current];
-      document.getElementById("question").textContent = stage.question;
-      const choicesContainer = document.getElementById("choices");
-      choicesContainer.innerHTML = "";
-      stage.choices.forEach((choice, i) => {
-        const btn = document.createElement("button");
-        btn.className = "choice";
-        btn.textContent = choice.text;
-        btn.onclick = () => {
-          disableChoices();
-          if (choice.correct) {
-            score++;
-            showFeedback(true, stage.correctResponse);
-          } else {
-            showFeedback(false, stage.wrongResponse);
-          }
-          updateScore();
-          setTimeout(nextStage, 2000);
-        };
-        choicesContainer.appendChild(btn);
-      });
-    }
-
-    function disableChoices() {
-      const btns = document.querySelectorAll(".choice");
-      btns.forEach(btn => btn.disabled = true);
-    }
-
-    function showFeedback(correct, message) {
-      const feedback = document.getElementById("feedback");
-      feedback.style.color = correct ? "green" : "red";
-      feedback.textContent = message;
-    }
-
-    function updateScore() {
-      document.getElementById("score").textContent = "คะแนน: " + score;
-    }
-
-    function nextStage() {
-      current++;
-      document.getElementById("feedback").textContent = "";
-      if (current < stages.length) {
-        showQuestion();
+      disableChoices();
+      if (choice.correct) {
+        correctSound.play(); // เล่นเสียงถูก
+        score += 1;
+        updateScore();
+        showFeedback(true);
+        dialogBox.innerHTML = <div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>;
+        setTimeout(nextStage, 2000);
       } else {
-        document.getElementById("dialog").style.display = "none";
-        document.getElementById("score").style.display = "none";
-        document.getElementById("result").style.display = "block";
-        document.getElementById("final-score").textContent = score + " / " + stages.length;
-        const name = prompt("กรอกชื่อของคุณเพื่อบันทึกคะแนน:");
-        if (name) sendScoreToGoogleSheet(name, score);
+        wrongSound.play(); // เล่นเสียงผิด
+        if (score > 0) score -= 0; // คะแนนไม่ลด
+        updateScore();
+        showFeedback(false);
+        dialogBox.innerHTML = <div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>;
+        setTimeout(nextStage, 2000);
       }
-    }
+    };
+    choicesBox.appendChild(btn);
+  });
 
-    function sendScoreToGoogleSheet(name, score) {
-      const url = 'https://script.google.com/macros/s/AKfycbyE6A6wP3Xh5J4GPaoVYVkDmMvo2UHENIHBIWBFUYqOBv77aWTcx1fDfFbsyGQIHU-7/exec';
-      fetch(url, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ name, score })
-      }).catch(err => {
-        console.error('ส่งคะแนนไม่สำเร็จ', err);
-      });
+  // ปุ่มขอคำใบ้และเล่นใหม่เหมือนเดิม
+  const hintBtn = document.createElement("button");
+  hintBtn.textContent = "ขอคำใบ้ 💡";
+  hintBtn.style.backgroundColor = "#3a8fbd";
+  hintBtn.style.boxShadow = "0 4px 8px #3a8fbd88";
+  hintBtn.onclick = () => {
+    if (!hintUsed && stage.hint) {
+      hintUsed = true;
+      alert(คำใบ้: ${stage.hint});
+      hintBtn.disabled = true;
     }
+  };
+  if (!stage.hint) {
+    hintBtn.disabled = true;
+  }
+  choicesBox.appendChild(hintBtn);
 
-    // เริ่มเกม
-    showQuestion();
-  </script>
+  const restartBtn = document.createElement("button");
+  restartBtn.textContent = "เล่นใหม่ 🔄";
+  restartBtn.style.backgroundColor = "#6ab04c";
+  restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
+  restartBtn.onclick = () => {
+    location.reload();
+  };
+  choicesBox.appendChild(restartBtn);
+
+  // เพิ่มจับเวลา 10 วินาทีให้คำถามนี้
+  questionTimer = setTimeout(() => {
+    disableChoices();
+    dialogBox.innerHTML = <div class="speaker">มายด์:</div><div style="color:orange;">หมดเวลาแล้วนะ! เราไปคำถามต่อไปกันเลย~</div>;
+    setTimeout(nextStage, 2000);
+  }, 10000); // 10000 ms = 10 วินาที
+}
+
+  function nextStage() {
+    currentStage++;
+    dialogIndex = 0;
+    clearChoices();
+    if (currentStage >= stages.length) {
+      sendScoreToGoogleSheet(playerName, score);
+      dialogBox.innerHTML = 
+        <div class="speaker">มายด์:</div>
+        <div>🎉 ยินดีด้วย, <strong>${playerName}</strong>! คุณได้คะแนน <strong>${score}</strong> คะแนนนะคะ~ ขอบคุณที่เล่นด้วยกัน 💖</div>
+      ;
+      setBackground("https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg");
+      clearChoices();
+      const restartBtn = document.createElement("button");
+      restartBtn.textContent = "เล่นใหม่ 🔄";
+      restartBtn.style.backgroundColor = "#6ab04c";
+      restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
+      restartBtn.onclick = () => {
+        location.reload();
+      };
+      choicesBox.appendChild(restartBtn);
+    } else {
+      setBackground(stages[currentStage].bg);
+      showDialog();
+    }
+  }
+
+  function startGame() {
+    playerName = playerNameInput.value.trim();
+    if (!playerName) {
+      alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
+      playerNameInput.focus();
+      return;
+    }
+    startScreen.style.display = 'none';
+    currentStage = 0;
+    dialogIndex = 0;
+    score = 0;
+    updateScore();
+    setBackground(stages[0].bg);
+    showDialog();
+  }
+
+  startBtn.addEventListener('click', startGame);
+  playerNameInput.addEventListener('keydown', e => {
+    if(e.key === 'Enter') startGame();
+  });
+
+  document.getElementById('character-img').addEventListener('dragstart', e => e.preventDefault());
+</script>
 </body>
 </html>
