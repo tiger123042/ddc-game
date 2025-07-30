@@ -6,39 +6,40 @@
 <title>จัดหมู่หนังสือ DDC</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
-  body {
-    margin: 0;
-    font-family: 'Kanit', sans-serif;
-    background: #fef6e4 url('https://cdn.pixabay.com/photo/2016/11/29/10/07/notebook-1869347_1280.jpg') no-repeat center center fixed;
-    background-size: cover;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    overflow: hidden;
-    color: #3b2f2f;
-  }
+ body {
+  margin: 0;
+  font-family: 'Kanit', sans-serif;
+  background: #fef6e4;  /* เอาพื้นหลังภาพออกจาก body */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  overflow: hidden;
+  color: #3b2f2f;
+}
+
+#game-container {
+  width: 90%;
+  max-width: 700px;
+  height: 70vh;
+  background: #fff8f0 url('https://cdn.pixabay.com/photo/2016/11/29/10/07/notebook-1869347_1280.jpg') no-repeat center center;
+  background-size: cover;
+  border-radius: 25px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+}
   h1 {
     margin: 20px;
     color: #d6336c;
     text-shadow: 1px 1px 2px #fff;
     font-size: 2.4rem;
     text-align: center;
-  }
-  #game-container {
-    width: 90%;
-    max-width: 700px;
-    height: 70vh;
-    background: #fff8f0;
-    border-radius: 25px;
-    box-shadow: 0 12px 24px rgba(0,0,0,0.3);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
-    cursor: default;
   }
   #game-container::before {
     content: "";
@@ -201,7 +202,7 @@
 <h1>📚 จัดหมู่หนังสือ DDC</h1>
 
 <div id="game-container">
-  <img id="character-img" src="https://i.imgur.com/KH9a5aI.png" alt="มายด์" />
+  <img id="character-img" src="mind.png" alt="มายด์" />
   <div id="dialog-box"></div>
   <div id="choices"></div>
   <div id="score-display">คะแนน: 0</div>
@@ -215,7 +216,7 @@
 
 <!-- เสียงตอบถูกและตอบผิด -->
 <audio id="correct-sound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg" preload="auto"></audio>
-<audio id="wrong-sound" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg" preload="auto"></audio>
+<audio id="wrong-sound" src="wrong.mp3" preload="auto"></audio>
 
 <script>
   const dialogBox = document.getElementById('dialog-box');
@@ -234,219 +235,229 @@
   let currentStage = 0;
   let dialogIndex = 0;
   let score = 0;
+  let hintUsed = false;
 
   const stages = [
-    {
-      bg: "https://cdn.pixabay.com/photo/2019/09/22/21/06/stairs-4496960_1280.jpg",
-      characterImg: "https://i.imgur.com/KH9a5aI.png",
-      dialog: [
-        {speaker: "มายด์", text: "ไง~ ยินดีต้อนรับสู่โลกแห่งการจัดหนังสือนะ 💕"},
-        {speaker: "มายด์", text: "เราจะเริ่มด้วยคำถามเบาๆก่อนนะ พร้อมหรือยัง? 😊"}
-      ],
-      question: "ทำไมเราต้องจัดหมู่หนังสือในห้องสมุดด้วยล่ะ?",
-      choices: [
-        {text: "เพื่อให้ค้นหาหนังสือได้ง่ายและรวดเร็ว", correct: true},
-        {text: "เพราะอยากให้ห้องสมุดดูมีสีสัน", correct: false},
-        {text: "เพราะจะทำให้หนังสือหายากขึ้น", correct: false},
-        {text: "เพราะเป็นแฟชั่นใหม่ของห้องสมุด", correct: false}
-      ],
-      hint: "เพื่อความสะดวกและรวดเร็วในการค้นหา",
-      correctResponse: "ใช่เลย! แบบนี้ฉันชอบ 💖",
-      wrongResponse: "เอ๊ะ... ลองคิดอีกทีน้า~"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_1280.jpg",
-      characterImg: "https://i.imgur.com/yPMNBYu.png",
-      dialog: [
-        {speaker: "มายด์", text: "ต่อไป... หมวด 000 ในระบบ DDC หมายถึงอะไร? 🤔"}
-      ],
-      question: "หมวด 000 ของระบบ DDC คือเรื่องอะไร?",
-      choices: [
-        {text: "คอมพิวเตอร์และข้อมูลทั่วไป", correct: true},
-        {text: "ประวัติศาสตร์โลก", correct: false},
-        {text: "วิทยาศาสตร์", correct: false},
-        {text: "ศิลปะ", correct: false}
-      ],
-      hint: "เกี่ยวกับคอมพิวเตอร์และข้อมูลทั่วไป",
-      correctResponse: "ถูกต้อง! หมวดนี้ครอบคลุมเรื่องทั่วไปค่ะ 😊",
-      wrongResponse: "ไม่ใช่ค่ะ ลองใหม่นะ!"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2023/01/26/02/15/books-7744938_1280.jpg",
-      characterImg: "https://i.imgur.com/KH9a5aI.png",
-      dialog: [
-        {speaker: "มายด์", text: "หมวด 100 นั้นเกี่ยวข้องกับเรื่องอะไรนะ? 🧐"}
-      ],
-      question: "หมวด 100 ใน DDC หมายถึงเรื่องอะไร?",
-      choices: [
-        {text: "จิตวิทยาและปรัชญา", correct: true},
-        {text: "วิทยาศาสตร์", correct: false},
-        {text: "ประวัติศาสตร์", correct: false},
-        {text: "กฎหมาย", correct: false}
-      ],
-      hint: "เกี่ยวกับความคิดและจิตใจ",
-      correctResponse: "เยี่ยมมาก! ถูกต้องเลยค่ะ 😊",
-      wrongResponse: "ผิดแล้ว ลองใหม่นะ"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2015/07/31/11/45/library-869061_1280.jpg",
-      characterImg: "https://i.imgur.com/KH9a5aI.png",
-      dialog: [
-        {speaker: "มายด์", text: "หมวด 200 คือเรื่องอะไร? 🤓"}
-      ],
-      question: "หมวด 200 ของ DDC หมายถึงเรื่องอะไร?",
-      choices: [
-        {text: "ศาสนา", correct: true},
-        {text: "เทคโนโลยี", correct: false},
-        {text: "ประวัติศาสตร์", correct: false},
-        {text: "ภาษา", correct: false}
-      ],
-      hint: "เกี่ยวกับความเชื่อและศาสนา",
-      correctResponse: "ดีมาก! เข้าใจตรงกันค่ะ 💖",
-      wrongResponse: "ไม่ใช่ค่ะ ลองใหม่อีกครั้ง"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2017/09/05/20/51/library-2727257_1280.jpg",
-      characterImg: "https://i.imgur.com/yPMNBYu.png",
-      dialog: [
-        {speaker: "มายด์", text: "หมวด 300 นั้นเกี่ยวข้องกับอะไรนะ? 🤔"}
-      ],
-      question: "หมวด 300 ของ DDC คือเรื่องอะไร?",
-      choices: [
-        {text: "สังคมศาสตร์", correct: true},
-        {text: "ศิลปะ", correct: false},
-        {text: "วิทยาศาสตร์", correct: false},
-        {text: "สุขภาพ", correct: false}
-      ],
-      hint: "เกี่ยวกับสังคมและวัฒนธรรม",
-      correctResponse: "ถูกต้อง! คุณฉลาดมาก 😎",
-      wrongResponse: "ผิดค่ะ ลองใหม่อีกครั้งนะ"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596811_1280.jpg",
-      characterImg: "https://i.imgur.com/yPMNBYu.png",
-      dialog: [
-        {speaker: "มายด์", text: "หมวด 400 นั้นเกี่ยวกับอะไรนะ? 🤓"}
-      ],
-      question: "หมวด 400 ของ DDC หมายถึงอะไร?",
-      choices: [
-        {text: "ภาษา", correct: true},
-        {text: "ประวัติศาสตร์", correct: false},
-        {text: "เทคโนโลยี", correct: false},
-        {text: "กฎหมาย", correct: false}
-      ],
-      hint: "เกี่ยวกับการสื่อสารและภาษา",
-      correctResponse: "ดีมากค่ะ! ตอบได้ถูกต้อง 👍",
-      wrongResponse: "ลองใหม่ค่ะ ไม่ใช่หมวดนี้"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_1280.jpg",
-      characterImg: "https://i.imgur.com/KH9a5aI.png",
-      dialog: [
-        {speaker: "มายด์", text: "หมวด 500 เป็นเรื่องเกี่ยวกับอะไร? 🤔"}
-      ],
-      question: "หมวด 500 ใน DDC คือเรื่องอะไร?",
-      choices: [
-        {text: "วิทยาศาสตร์และธรรมชาติ", correct: true},
-        {text: "การเมือง", correct: false},
-        {text: "ประวัติศาสตร์", correct: false},
-        {text: "เทคโนโลยี", correct: false}
-      ],
-      hint: "เกี่ยวข้องกับธรรมชาติและวิทยาศาสตร์",
-      correctResponse: "เก่งมากเลย! ฉันปลื้มสุดๆ 😳",
-      wrongResponse: "อุ๊ย ไม่ใช่นะ ลองใหม่นะ~"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2018/03/05/21/51/library-3207691_1280.jpg",
-      characterImg: "https://i.imgur.com/yPMNBYu.png",
-      dialog: [
-        {speaker: "มายด์", text: "หมวด 600 คือเรื่องอะไร? 🤓"}
-      ],
-      question: "หมวด 600 ของ DDC คือเรื่องอะไร?",
-      choices: [
-        {text: "เทคโนโลยีและวิศวกรรม", correct: true},
-        {text: "ศิลปะ", correct: false},
-        {text: "สุขภาพ", correct: false},
-        {text: "ประวัติศาสตร์", correct: false}
-      ],
-      hint: "เกี่ยวกับเทคโนโลยีและการสร้างสิ่งต่าง ๆ",
-      correctResponse: "ใช่เลย! เก่งมากค่ะ 👍",
-      wrongResponse: "ลองอีกทีนะ ไม่ใช่หมวดนี้"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596810_1280.jpg",
-      characterImg: "https://i.imgur.com/yPMNBYu.png",
-      dialog: [
-        {speaker: "มายด์", text: "หมวด 700 เป็นเรื่องเกี่ยวกับอะไร? 🤔"}
-      ],
-      question: "หมวด 700 ของ DDC หมายถึงอะไร?",
-      choices: [
-        {text: "ศิลปะและการออกแบบ", correct: true},
-        {text: "กฎหมาย", correct: false},
-        {text: "วิทยาศาสตร์", correct: false},
-        {text: "สุขภาพ", correct: false}
-      ],
-      hint: "เกี่ยวกับความคิดสร้างสรรค์และศิลปะ",
-      correctResponse: "ว้าว~ เธอนี่แหละคู่หูอ่านหนังสือในฝันของฉันเลย 😘",
-      wrongResponse: "อือ... ไม่ใช่นะ ลองตอบใหม่สิจ๊ะ"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_1280.jpg",
-      characterImg: "https://i.imgur.com/KH9a5aI.png",
-      dialog: [
-        {speaker: "มายด์", text: "หมวด 800 คือเรื่องอะไรนะ? 🤓"}
-      ],
-      question: "หมวด 800 ของ DDC หมายถึงอะไร?",
-      choices: [
-        {text: "วรรณคดีและภาษา", correct: true},
-        {text: "ประวัติศาสตร์", correct: false},
-        {text: "คอมพิวเตอร์", correct: false},
-        {text: "สุขภาพ", correct: false}
-      ],
-      hint: "เกี่ยวกับวรรณคดีและภาษา",
-      correctResponse: "ตอบถูก! ดีใจจัง 😊",
-      wrongResponse: "ลองใหม่ค่ะ ไม่ใช่หมวดนี้"
-    },
-    {
-      bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596811_1280.jpg",
-      characterImg: "https://i.imgur.com/KH9a5aI.png",
-      dialog: [
-        {speaker: "มายด์", text: "หมวด 900 หมายถึงเรื่องอะไร? 🧐"}
-      ],
-      question: "หมวด 900 ของ DDC คือเรื่องอะไร?",
-      choices: [
-        {text: "ประวัติศาสตร์และภูมิศาสตร์", correct: true},
-        {text: "คอมพิวเตอร์", correct: false},
-        {text: "ศิลปะ", correct: false},
-        {text: "เทคโนโลยี", correct: false}
-      ],
-      hint: "เกี่ยวกับเหตุการณ์ในอดีตและพื้นที่ต่าง ๆ",
-      correctResponse: "ใช่เลย! เธอเก่งมากจริง ๆ 😍",
-      wrongResponse: "ผิดค่ะ ลองใหม่นะ"
-    }
-  ];
+  {
+    bg: "https://cdn.pixabay.com/photo/2019/09/22/21/06/stairs-4496960_1280.jpg",
+    characterImg: "mind.png",
+    dialog: [
+      {speaker: "มายด์", text: "ไง~ ยินดีต้อนรับสู่โลกแห่งการจัดหนังสือนะ 💕"},
+      {speaker: "มายด์", text: "เราจะเริ่มด้วยคำถามเบาๆก่อนนะ พร้อมหรือยัง? 😊"}
+    ],
+    question: "ทำไมเราต้องจัดหมู่หนังสือในห้องสมุดด้วยล่ะ?",
+    choices: [
+      {text: "เพื่อให้ค้นหาหนังสือได้ง่ายและรวดเร็ว", correct: true},
+      {text: "เพราะอยากให้ห้องสมุดดูมีสีสัน", correct: false},
+      {text: "เพราะจะทำให้หนังสือหายากขึ้น", correct: false},
+      {text: "เพราะเป็นแฟชั่นใหม่ของห้องสมุด", correct: false}
+    ],
+    hint: "เพื่อความสะดวกและรวดเร็วในการค้นหา",
+    correctResponse: "ใช่เลย! แบบนี้ฉันชอบ 💖",
+    wrongResponse: "เอ๊ะ... ลองคิดอีกทีน้า~"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_1280.jpg",
+    characterImg: "mind2.png",
+    dialog: [
+      {speaker: "มายด์", text: "ต่อไป... หมวด 000 ในระบบ DDC หมายถึงอะไร? 🤔"}
+    ],
+    question: "หมวด 000 ของระบบ DDC คือเรื่องอะไร?",
+    choices: [
+      {text: "คอมพิวเตอร์และข้อมูลทั่วไป", correct: true},
+      {text: "ประวัติศาสตร์โลก", correct: false},
+      {text: "วิทยาศาสตร์", correct: false},
+      {text: "ศิลปะ", correct: false}
+    ],
+    hint: "เกี่ยวกับคอมพิวเตอร์และข้อมูลทั่วไป",
+    correctResponse: "ถูกต้อง! หมวดนี้ครอบคลุมเรื่องทั่วไปค่ะ 😊",
+    wrongResponse: "ไม่ใช่ค่ะ ลองใหม่นะ!"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2023/01/26/02/15/books-7744938_1280.jpg",
+    characterImg: "mind.png",
+    dialog: [
+      {speaker: "มายด์", text: "หมวด 100 นั้นเกี่ยวข้องกับเรื่องอะไรนะ? 🧐"}
+    ],
+    question: "หมวด 100 ใน DDC หมายถึงเรื่องอะไร?",
+    choices: [
+      {text: "จิตวิทยาและปรัชญา", correct: true},
+      {text: "วิทยาศาสตร์", correct: false},
+      {text: "ประวัติศาสตร์", correct: false},
+      {text: "กฎหมาย", correct: false}
+    ],
+    hint: "เกี่ยวกับความคิดและจิตใจ",
+    correctResponse: "เยี่ยมมาก! ถูกต้องเลยค่ะ 😊",
+    wrongResponse: "ผิดแล้ว ลองใหม่นะ"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2015/07/31/11/45/library-869061_1280.jpg",
+    characterImg: "mind.png",
+    dialog: [
+      {speaker: "มายด์", text: "หมวด 200 คือเรื่องอะไร? 🤓"}
+    ],
+    question: "หมวด 200 ของ DDC หมายถึงเรื่องอะไร?",
+    choices: [
+      {text: "ศาสนา", correct: true},
+      {text: "เทคโนโลยี", correct: false},
+      {text: "ประวัติศาสตร์", correct: false},
+      {text: "ภาษา", correct: false}
+    ],
+    hint: "เกี่ยวกับความเชื่อและศาสนา",
+    correctResponse: "ดีมาก! เข้าใจตรงกันค่ะ 💖",
+    wrongResponse: "ไม่ใช่ค่ะ ลองใหม่อีกครั้ง"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2017/09/05/20/51/library-2727257_1280.jpg",
+    characterImg: "mind2.png",
+    dialog: [
+      {speaker: "มายด์", text: "หมวด 300 นั้นเกี่ยวข้องกับอะไรนะ? 🤔"}
+    ],
+    question: "หมวด 300 ของ DDC คือเรื่องอะไร?",
+    choices: [
+      {text: "สังคมศาสตร์", correct: true},
+      {text: "ศิลปะ", correct: false},
+      {text: "วิทยาศาสตร์", correct: false},
+      {text: "สุขภาพ", correct: false}
+    ],
+    hint: "เกี่ยวกับสังคมและวัฒนธรรม",
+    correctResponse: "ถูกต้อง! คุณฉลาดมาก 😎",
+    wrongResponse: "ผิดค่ะ ลองใหม่อีกครั้งนะ"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596811_1280.jpg",
+    characterImg: "mind2.png",
+    dialog: [
+      {speaker: "มายด์", text: "หมวด 400 นั้นเกี่ยวกับอะไรนะ? 🤓"}
+    ],
+    question: "หมวด 400 ของ DDC หมายถึงอะไร?",
+    choices: [
+      {text: "ภาษา", correct: true},
+      {text: "ประวัติศาสตร์", correct: false},
+      {text: "เทคโนโลยี", correct: false},
+      {text: "กฎหมาย", correct: false}
+    ],
+    hint: "เกี่ยวกับการสื่อสารและภาษา",
+    correctResponse: "ดีมากค่ะ! ตอบได้ถูกต้อง 👍",
+    wrongResponse: "ลองใหม่ค่ะ ไม่ใช่หมวดนี้"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_1280.jpg",
+    characterImg: "mind.png",
+    dialog: [
+      {speaker: "มายด์", text: "หมวด 500 เป็นเรื่องเกี่ยวกับอะไร? 🤔"}
+    ],
+    question: "หมวด 500 ใน DDC คือเรื่องอะไร?",
+    choices: [
+      {text: "วิทยาศาสตร์และธรรมชาติ", correct: true},
+      {text: "การเมือง", correct: false},
+      {text: "ประวัติศาสตร์", correct: false},
+      {text: "เทคโนโลยี", correct: false}
+    ],
+    hint: "เกี่ยวข้องกับธรรมชาติและวิทยาศาสตร์",
+    correctResponse: "เก่งมากเลย! ฉันปลื้มสุดๆ 😳",
+    wrongResponse: "อุ๊ย ไม่ใช่นะ ลองใหม่นะ~"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2018/03/05/21/51/library-3207691_1280.jpg",
+    characterImg: "mind2.png",
+    dialog: [
+      {speaker: "มายด์", text: "หมวด 600 คือเรื่องอะไร? 🤓"}
+    ],
+    question: "หมวด 600 ของ DDC คือเรื่องอะไร?",
+    choices: [
+      {text: "เทคโนโลยีและวิศวกรรม", correct: true},
+      {text: "ศิลปะ", correct: false},
+      {text: "สุขภาพ", correct: false},
+      {text: "ประวัติศาสตร์", correct: false}
+    ],
+    hint: "เกี่ยวกับเทคโนโลยีและการสร้างสิ่งต่าง ๆ",
+    correctResponse: "ใช่เลย! เก่งมากค่ะ 👍",
+    wrongResponse: "ลองอีกทีนะ ไม่ใช่หมวดนี้"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596810_1280.jpg",
+    characterImg: "mind2.png",
+    dialog: [
+      {speaker: "มายด์", text: "หมวด 700 เป็นเรื่องเกี่ยวกับอะไร? 🤔"}
+    ],
+    question: "หมวด 700 ของ DDC หมายถึงอะไร?",
+    choices: [
+      {text: "ศิลปะและการออกแบบ", correct: true},
+      {text: "กฎหมาย", correct: false},
+      {text: "วิทยาศาสตร์", correct: false},
+      {text: "สุขภาพ", correct: false}
+    ],
+    hint: "เกี่ยวกับความคิดสร้างสรรค์และศิลปะ",
+    correctResponse: "ว้าว~ เธอนี่แหละคู่หูอ่านหนังสือในฝันของฉันเลย 😘",
+    wrongResponse: "อือ... ไม่ใช่นะ ลองตอบใหม่สิจ๊ะ"
+  },
+  {
+    bg: "https://cdn.pixabay.com/photo/2017/08/06/00/43/books-2581596_960_720.jpg",
+    characterImg: "mind.png",
+    dialog: [
+      {speaker: "มายด์", text: "ด่านสุดท้าย! หมวด 900 คือเรื่องอะไร? 😍"}
+    ],
+    question: "หมวด 900 ของ DDC หมายถึงเรื่องอะไร?",
+    choices: [
+      {text: "ประวัติศาสตร์และภูมิศาสตร์", correct: true},
+      {text: "สุขภาพ", correct: false},
+      {text: "เทคโนโลยี", correct: false},
+      {text: "กฎหมาย", correct: false}
+    ],
+    hint: "เกี่ยวกับเรื่องราวในอดีตและสถานที่",
+    correctResponse: "สุดยอดไปเลย! เธอเก่งมากจริงๆ 💖",
+    wrongResponse: "อุ๊ย! ไม่ใช่ค่ะ ลองใหม่นะ"
+  }
+];
 
-  function playSound(sound) {
-    sound.currentTime = 0;
-    sound.play();
+  function shuffleArray(array) {
+    // Fisher–Yates shuffle
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
   }
 
   function updateScore() {
-    scoreDisplay.textContent = `คะแนน: ${score}`;
+    scoreDisplay.textContent = คะแนน: ${score};
+  }
+
+  function disableChoices() {
+    const btns = choicesBox.querySelectorAll("button");
+    btns.forEach(btn => btn.disabled = true);
+  }
+
+  function enableChoices() {
+    const btns = choicesBox.querySelectorAll("button");
+    btns.forEach(btn => btn.disabled = false);
+  }
+
+  function showFeedback(correct) {
+    dialogBox.style.animation = 'none';
+    if (correct) {
+      dialogBox.style.animation = 'correctFlash 1.2s ease forwards';
+    } else {
+      dialogBox.style.animation = 'wrongFlash 1.2s ease forwards';
+    }
+  }
+
+  function clearDialog() {
+    dialogBox.textContent = "";
   }
 
   function showDialogText(text, callback) {
     dialogBox.textContent = "";
     let i = 0;
-    const speed = 30;
+    const speed = 30; // ms per char
 
     function typeWriter() {
       if (i < text.length) {
         dialogBox.textContent += text.charAt(i);
         i++;
         setTimeout(typeWriter, speed);
-      } else {
-        if (callback) callback();
+      } else if (callback) {
+        callback();
       }
     }
     typeWriter();
@@ -455,7 +466,7 @@
   function showStageDialog(stage, callback) {
     if (dialogIndex < stage.dialog.length) {
       const d = stage.dialog[dialogIndex];
-      showDialogText(`${d.speaker}: ${d.text}`, () => {
+      showDialogText(${d.speaker}: ${d.text}, () => {
         dialogIndex++;
         showStageDialog(stage, callback);
       });
@@ -465,128 +476,83 @@
     }
   }
 
-  function clearChoices() {
-    choicesBox.innerHTML = "";
-  }
-
-  function showHint(hint) {
-    const hintEl = document.createElement('p');
-    hintEl.textContent = `💡 คำใบ้: ${hint}`;
-    hintEl.style.fontStyle = "italic";
-    hintEl.style.color = "#a6284a";
-    hintEl.style.marginTop = "12px";
-    dialogBox.appendChild(hintEl);
-  }
-
   function showQuestion() {
-    clearChoices();
     const stage = stages[currentStage];
-    showDialogText(`คำถาม: ${stage.question}`, () => {
-      stage.choices.forEach((choice, idx) => {
-        const btn = document.createElement('button');
-        btn.textContent = choice.text;
-        btn.disabled = false;
-        btn.addEventListener('click', () => {
-          btn.disabled = true;
-          choicesBox.querySelectorAll('button').forEach(b => b.disabled = true);
+    // เปลี่ยนภาพพื้นหลัง
+    document.body.style.backgroundImage = url('${stage.bg}');
+    characterImg.src = stage.characterImg;
 
-          if(choice.correct) {
-            playSound(correctSound);
-            score++;
-            updateScore();
-            flashDialogBox('correct');
-            showDialogText(stage.correctResponse, () => {
-              nextStage();
-            });
-          } else {
-            playSound(wrongSound);
-            flashDialogBox('wrong');
-            showDialogText(stage.wrongResponse, () => {
-              showHint(stage.hint);
-              // ให้ผู้เล่นลองตอบใหม่ โดยเปิดปุ่มใหม่
-              clearChoices();
-              showQuestion();
-            });
-          }
-        });
-        choicesBox.appendChild(btn);
-      });
+    // แสดงคำถามและตัวเลือก
+    clearDialog();
+    choicesBox.innerHTML = "";
+    enableChoices();
+
+    // แสดงคำถามใน dialog box
+    showDialogText(มายด์: ${stage.question});
+
+    // สุ่มตัวเลือกคำตอบ
+    const shuffledChoices = [...stage.choices];
+    shuffleArray(shuffledChoices);
+
+    shuffledChoices.forEach(choice => {
+      const btn = document.createElement("button");
+      btn.textContent = choice.text;
+      btn.onclick = () => {
+        disableChoices();
+        if (choice.correct) {
+          correctSound.currentTime = 0;
+          correctSound.play();
+          score += 1;
+          updateScore();
+          showFeedback(true);
+          dialogBox.innerHTML = <div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>;
+          setTimeout(() => {
+            currentStage++;
+            if (currentStage >= stages.length) {
+              showEndScreen();
+            } else {
+              showStageDialog(stages[currentStage], showQuestion);
+            }
+          }, 2000);
+        } else {
+          wrongSound.currentTime = 0;
+          wrongSound.play();
+          score -= 1;
+          if (score < 0) score = 0;
+          updateScore();
+          showFeedback(false);
+          dialogBox.innerHTML = <div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div><div style="font-style: italic; font-size: 0.9rem; margin-top:10px;">(คำใบ้: ${stage.hint})</div>;
+          setTimeout(showQuestion, 2000);
+        }
+      };
+      choicesBox.appendChild(btn);
     });
   }
 
-  function flashDialogBox(type) {
-    if(type === 'correct') {
-      dialogBox.style.animation = 'correctFlash 1s ease';
-    } else {
-      dialogBox.style.animation = 'wrongFlash 1s ease';
-    }
-    setTimeout(() => {
-      dialogBox.style.animation = '';
-    }, 1000);
-  }
-
-  function nextStage() {
-    currentStage++;
-    if (currentStage < stages.length) {
-      dialogIndex = 0;
-      characterImg.src = stages[currentStage].characterImg;
-      gameContainer.style.backgroundImage = `url(${stages[currentStage].bg})`;
-      showStageDialog(stages[currentStage], showQuestion);
-    } else {
-      endGame();
-    }
-  }
-
-  function endGame() {
-    clearChoices();
-    dialogBox.textContent = `${playerName}, คุณทำคะแนนได้ ${score} จาก ${stages.length} คะแนน 🎉 ขอบคุณที่เล่นเกมนะ!`;
-    scoreDisplay.textContent = "";
-    characterImg.src = "https://i.imgur.com/zyGZcuS.png"; // รูปมายด์โบกมือลา (ใช้ภาพตัวอย่าง)
-    // แสดงปุ่มเริ่มใหม่
-    const restartBtn = document.createElement('button');
-    restartBtn.textContent = "เล่นใหม่";
-    restartBtn.style.marginTop = "16px";
-    restartBtn.style.backgroundColor = "#d6336c";
-    restartBtn.style.color = "#fff";
-    restartBtn.style.borderRadius = "16px";
-    restartBtn.style.padding = "12px 24px";
-    restartBtn.style.fontSize = "1.2rem";
-    restartBtn.style.cursor = "pointer";
-    restartBtn.addEventListener('click', () => {
-      score = 0;
-      currentStage = 0;
-      scoreDisplay.textContent = `คะแนน: ${score}`;
-      dialogIndex = 0;
-      characterImg.src = stages[0].characterImg;
-      gameContainer.style.backgroundImage = `url(${stages[0].bg})`;
-      clearChoices();
-      dialogBox.textContent = "";
-      startScreen.style.display = 'flex';
-    });
-    choicesBox.appendChild(restartBtn);
+  function showEndScreen() {
+    dialogBox.innerHTML = <div class="speaker">มายด์:</div><div style="color:#d6336c; font-weight: bold; font-size: 1.3rem;">
+      ยินดีด้วย ${playerName}! คุณทำคะแนนได้ทั้งหมด ${score} คะแนน 🎉🎉🎉<br><br>
+      ขอบคุณที่เล่นเกมนี้ด้วยกันนะคะ 😊💕
+    </div>;
+    choicesBox.innerHTML = "";
+    scoreDisplay.style.display = "none";
+    characterImg.src = "mind.png";
   }
 
   startBtn.addEventListener('click', () => {
     const name = playerNameInput.value.trim();
-    if(name.length < 2){
+    if (name.length < 2) {
       alert("กรุณากรอกชื่อของคุณอย่างน้อย 2 ตัวอักษร");
       return;
     }
     playerName = name;
-    startScreen.style.display = 'none';
+    startScreen.style.display = "none";
     score = 0;
     currentStage = 0;
-    dialogIndex = 0;
+    scoreDisplay.style.display = "block";
     updateScore();
-    characterImg.src = stages[0].characterImg;
-    gameContainer.style.backgroundImage = `url(${stages[0].bg})`;
-    showStageDialog(stages[0], showQuestion);
+    showStageDialog(stages[currentStage], showQuestion);
   });
-
-  // ตั้งค่าเริ่มต้น
-  characterImg.src = stages[0].characterImg;
-  gameContainer.style.backgroundImage = `url(${stages[0].bg})`;
-  scoreDisplay.textContent = "คะแนน: 0";
 
 </script>
 
