@@ -435,13 +435,11 @@
     choicesBox.querySelectorAll("button").forEach(btn => btn.disabled = true);
   }
 
-  function showFeedback(correct) {
-    dialogBox.style.animation = correct ? 'correctFlash 0.6s' : 'wrongFlash 0.6s'; 
-     dialogBox.style.animation2 = yay ? 'yayFlash 0.6s' : 'wrongFlash 0.6s';
-    dialogBox.addEventListener('animationend', () => dialogBox.style.animation = '', { once: true });
-    dialogBox.addEventListener('animationend', () => dialogBox.style.animation2 = '', { once: true });
-  }
-  
+function showFeedback(correct, yay = false) {
+  const animationName = correct ? (yay ? 'yayFlash' : 'correctFlash') : 'wrongFlash';
+  dialogBox.style.animation = `${animationName} 0.6s`;
+  dialogBox.addEventListener('animationend', () => dialogBox.style.animation = '', { once: true });
+}
 
   function showDialog() {
     const stage = stages[currentStage];
@@ -489,7 +487,7 @@
           yaySound.play();
           score += 1;
           updateScore();
-          showFeedback(true);
+          showFeedback(true, choice.yay);
           dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
         } else {
           wrongSound.play();
