@@ -223,7 +223,7 @@
 
 <audio id="correct-sound" src="correct.mp3" preload="auto"></audio>
 <audio id="wrong-sound" src="wrong.mp3" preload="auto"></audio>
-<audio id="yay-sound" src="wrong.mp3" preload="auto"></audio>
+<audio id="yay-sound" src="yay.mp3" preload="auto"></audio>
 <script>
   const dialogBox = document.getElementById('dialog-box');
   const choicesBox = document.getElementById('choices');
@@ -436,10 +436,11 @@
   }
 
   function showFeedback(correct) {
-    dialogBox.style.animation = correct ? 'correctFlash 0.6s' : 'wrongFlash 0.6s';
-    dialogBox.style.animation = yay ? 'yayFlash 0.6s' : 'wrongFlash 0.6s';
+    dialogBox.style.animation = correct ? 'correctFlash 0.6s' : 'wrongFlash 0.6s'; 
+     dialogBox.style.animation = yay ? 'yayFlash 0.6s' : 'wrongFlash 0.6s';
     dialogBox.addEventListener('animationend', () => dialogBox.style.animation = '', { once: true });
   }
+  
 
   function showDialog() {
     const stage = stages[currentStage];
