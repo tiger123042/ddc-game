@@ -254,7 +254,7 @@
   ],
   question: "ตัวเลข 3 หลักแรกของ DDC ใช้เพื่ออะไร?",
   choices: [
-    {text: "บอกหมวดหลักของเนื้อหา", correct: true},
+    {text: "บอกหมวดหลักของเนื้อหา", correct: true , yay: true},
     {text: "บอกชื่อผู้แต่ง", correct: false},
     {text: "บอกสถานที่พิมพ์", correct: false},
     {text: "บอกวันหมดอายุของหนังสือ", correct: false}
@@ -271,7 +271,7 @@
   ],
   question: "ใครเป็นผู้พัฒนาระบบทศนิยมดิวอี้?",
   choices: [
-    {text: "Melvil Dewey", correct: true},
+    {text: "Melvil Dewey", correct: true , yay: true},
     {text: "Albert Einstein", correct: false},
     {text: "Bill Gates", correct: false},
     {text: "Marie Curie", correct: false}
@@ -305,7 +305,7 @@
   ],
   question: "ระบบ DDC แบ่งหมวดหลักทั้งหมดกี่หมวด?",
   choices: [
-    {text: "10 หมวด", correct: true},
+    {text: "10 หมวด", correct: true , yay: true},
     {text: "5 หมวด", correct: false},
     {text: "100 หมวด", correct: false},
     {text: "26 หมวด", correct: false}
@@ -322,7 +322,7 @@
   ],
   question: "เลข DDC มักจะปรากฏอยู่ตรงไหนของหนังสือในห้องสมุด?",
   choices: [
-    {text: "สันหนังสือ", correct: true},
+    {text: "สันหนังสือ", correct: true , yay: true},
     {text: "ปกหลัง", correct: false},
     {text: "ในเนื้อหา", correct: false},
     {text: "ในคำนำ", correct: false}
@@ -339,7 +339,7 @@
   ],
   question: "หมวด 000 ในระบบ DDC ใช้กับเรื่องอะไร?",
   choices: [
-    {text: "ความรู้ทั่วไป", correct: true},
+    {text: "ความรู้ทั่วไป", correct: true , yay: true},
     {text: "คณิตศาสตร์", correct: false},
     {text: "ชีววิทยา", correct: false},
     {text: "เทคโนโลยี", correct: false}
@@ -356,7 +356,7 @@
   ],
   question: "หมวด 200 ในระบบ DDC หมายถึงอะไร?",
   choices: [
-    {text: "ศาสนา", correct: true},
+    {text: "ศาสนา", correct: true , yay: true},
     {text: "สุขภาพ", correct: false},
     {text: "วิทยาศาสตร์", correct: false},
     {text: "กฎหมาย", correct: false}
@@ -373,7 +373,7 @@
   ],
   question: "หมวด 610 ในระบบ DDC หมายถึงอะไร?",
   choices: [
-    {text: "การแพทย์", correct: true},
+    {text: "การแพทย์", correct: true , yay: true},
     {text: "ปรัชญา", correct: false},
     {text: "วรรณกรรม", correct: false},
     {text: "การท่องเที่ยว", correct: false}
@@ -390,7 +390,7 @@
   ],
   question: "การเรียงหนังสือตามระบบ DDC ใช้หลักใด?",
   choices: [
-    {text: "เรียงตามเลขจากน้อยไปมาก", correct: true},
+    {text: "เรียงตามเลขจากน้อยไปมาก", correct: true , yay: true},
     {text: "เรียงตามสีปก", correct: false},
     {text: "เรียงตามชื่อผู้แต่ง", correct: false},
     {text: "เรียงแบบสุ่ม", correct: false}
@@ -407,7 +407,7 @@
   ],
   question: "ข้อใดต่อไปนี้ *ไม่ใช่* ประโยชน์ของระบบ DDC?",
   choices: [
-    {text: "ทำให้หาหนังสือได้ยากขึ้น", correct: true},
+    {text: "ทำให้หาหนังสือได้ยากขึ้น", correct: true , yay: true},
     {text: "ช่วยให้จัดหนังสือเป็นระบบ", correct: false},
     {text: "ทำให้ผู้ใช้เข้าใจหมวดหมู่ได้ง่าย", correct: false},
     {text: "เพิ่มประสิทธิภาพในการจัดเก็บ", correct: false}
@@ -437,8 +437,9 @@
 
   function showFeedback(correct) {
     dialogBox.style.animation = correct ? 'correctFlash 0.6s' : 'wrongFlash 0.6s'; 
-     dialogBox.style.animation = yay ? 'yayFlash 0.6s' : 'wrongFlash 0.6s';
+     dialogBox.style.animation2 = yay ? 'yayFlash 0.6s' : 'wrongFlash 0.6s';
     dialogBox.addEventListener('animationend', () => dialogBox.style.animation = '', { once: true });
+    dialogBox.addEventListener('animationend', () => dialogBox.style.animation2 = '', { once: true });
   }
   
 
