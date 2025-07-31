@@ -240,278 +240,244 @@
   let countdownTimer = null;
   let remainingTime = 10;
 
-   const stages = [
-  {
-  bg: "https://cdn.pixabay.com/photo/2016/02/16/21/07/christmas-background-1204029_1280.jpg",
-    characterImg: "mind.png",
-  dialog: [
-    {speaker: "มายด์", text: "เรามารู้จักเลข DDC แบบละเอียดขึ้นกันเถอะ! 😄"}
-  ],
-  question: "ตัวเลข 3 หลักแรกของ DDC ใช้เพื่ออะไร?",
-  choices: [
-    {text: "บอกหมวดหลักของเนื้อหา", correct: true},
-    {text: "บอกชื่อผู้แต่ง", correct: false},
-    {text: "บอกสถานที่พิมพ์", correct: false},
-    {text: "บอกวันหมดอายุของหนังสือ", correct: false}
-  ],
-  hint: "คำใบ้: ใช้จัดเนื้อหาหลักของหนังสือเป็นกลุ่ม",
-  correctResponse: "ใช่เลย! เข้าใจหลักการแล้วนะเนี่ย 🤓",
-  wrongResponse: "อุ๊ยย~ ยังไม่ถูกนะ ลองอีกทีจ้า~"
-},
-{
-  bg: "https://cdn.pixabay.com/photo/2023/01/26/02/15/books-7744938_1280.jpg",
-  characterImg: "mind2.png",
-  dialog: [
-    {speaker: "มายด์", text: "รู้ไหมว่า DDC เริ่มต้นจากใครน้า? 🧐"}
-  ],
-  question: "ใครเป็นผู้พัฒนาระบบทศนิยมดิวอี้?",
-  choices: [
-    {text: "Melvil Dewey", correct: true},
-    {text: "Albert Einstein", correct: false},
-    {text: "Bill Gates", correct: false},
-    {text: "Marie Curie", correct: false}
-  ],
-  hint: "คำใบ้: ชื่อเดียวกับชื่อระบบเลย~",
-  correctResponse: "เก่งมาก! จำชื่อเขาได้ด้วย 👏",
-  wrongResponse: "ยังไม่ถูกนะ ลองนึกดีๆสิ!"
-},
-{
-  bg: "https://cdn.pixabay.com/photo/2015/07/31/11/45/library-869061_1280.jpg",
-  characterImg: "mind3.png",
-  dialog: [
-    {speaker: "มายด์", text: "บางหมวดอาจจะใช้เลขจุดทศนิยมต่อท้ายด้วยนะ ✨"}
-  ],
-  question: "เลขทศนิยมใน DDC ใช้เพื่ออะไร?",
-  choices: [
-    {text: "ระบุรายละเอียดเนื้อหาให้เฉพาะเจาะจงขึ้น", correct: true},
-    {text: "ใช้แทนราคาหนังสือ", correct: false},
-    {text: "ใช้บอกขนาดของหนังสือ", correct: false},
-    {text: "ใช้เรียงตามวันออกหนังสือ", correct: false}
-  ],
-  hint: "คำใบ้: ช่วยแยกย่อยหัวข้อได้ละเอียดมากขึ้น",
-  correctResponse: "สุดยอดเลย! เข้าใจระบบดีมาก 👍",
-  wrongResponse: "อ๊ะ ไม่ใช่น้า~ ลองตอบใหม่จ้า"
-},
-{
-  bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_640.jpg",
-  characterImg: "mind2.png",
-  dialog: [
-    {speaker: "มายด์", text: "คิดว่า DDC มีทั้งหมดกี่หมวดหลักเอ่ย? 🤔"}
-  ],
-  question: "ระบบ DDC แบ่งหมวดหลักทั้งหมดกี่หมวด?",
-  choices: [
-    {text: "10 หมวด", correct: true},
-    {text: "5 หมวด", correct: false},
-    {text: "100 หมวด", correct: false},
-    {text: "26 หมวด", correct: false}
-  ],
-  hint: "คำใบ้: เริ่มตั้งแต่ 000 จนถึง 900",
-  correctResponse: "ตอบถูกต้องเลย~ เก่งมากจ้า! 🎊",
-  wrongResponse: "ใกล้แล้ว ลองนึกถึงเลขสามหลักสิ~"
-},
-{
-  bg: "https://cdn.pixabay.com/photo/2024/07/31/12/20/books-8934573_640.jpg",
-  characterImg: "mind1.png",
-  dialog: [
-    {speaker: "มายด์", text: "บางทีเราต้องดูป้ายเลขเรียงหนังสือด้วยนะ 📚"}
-  ],
-  question: "เลข DDC มักจะปรากฏอยู่ตรงไหนของหนังสือในห้องสมุด?",
-  choices: [
-    {text: "สันหนังสือ", correct: true},
-    {text: "ปกหลัง", correct: false},
-    {text: "ในเนื้อหา", correct: false},
-    {text: "ในคำนำ", correct: false}
-  ],
-  hint: "คำใบ้: ใช้จัดวางเรียงชั้นในห้องสมุด",
-  correctResponse: "ถูกต้อง! เธอนี่แหละนักจัดหมู่ตัวจริง 🏆",
-  wrongResponse: "อุ๊ย~ ลองดูรอบๆหนังสือดีๆอีกครั้งนะ"
-},
-{
-  bg: "https://cdn.pixabay.com/photo/2020/07/24/09/49/books-5433432_640.jpg",
-  characterImg: "mind3.png",
-  dialog: [
-    {speaker: "มายด์", text: "รู้ไหมว่าแต่ละหมวด DDC มีตัวเลขอะไรบ้างน้า? 🧠"}
-  ],
-  question: "หมวด 000 ในระบบ DDC ใช้กับเรื่องอะไร?",
-  choices: [
-    {text: "ความรู้ทั่วไป", correct: true},
-    {text: "คณิตศาสตร์", correct: false},
-    {text: "ชีววิทยา", correct: false},
-    {text: "เทคโนโลยี", correct: false}
-  ],
-  hint: "คำใบ้: รวมเรื่องทั่วไป สารานุกรม และคอมพิวเตอร์",
-  correctResponse: "สุดยอด! เธอรู้จริงๆเลยนะ! 💡",
-  wrongResponse: "ผิดจ้า~ ยังไม่ใช่หมวดนี้นะ"
-},
-{
-  bg: "https://cdn.pixabay.com/photo/2020/05/23/20/08/books-5211309_1280.jpg",
-  characterImg: "mind2.png",
-  dialog: [
-    {speaker: "มายด์", text: "หมวด ที่ 200 ใน DDC เกี่ยวกับอะไรน้าาาา~ 🙏"}
-  ],
-  question: "หมวด 200 ในระบบ DDC หมายถึงอะไร?",
-  choices: [
-    {text: "ศาสนา", correct: true},
-    {text: "สุขภาพ", correct: false},
-    {text: "วิทยาศาสตร์", correct: false},
-    {text: "กฎหมาย", correct: false}
-  ],
-  hint: "คำใบ้: ความเชื่อ",
-  correctResponse: "ตอบได้ดีมากเลย! เธอเก่งจริงๆ 🌼",
-  wrongResponse: "ยังไม่ใช่หมวดนี้นะ ลองใหม่ๆ"
-},
-{
-  bg: "https://cdn.pixabay.com/photo/2014/10/14/20/14/library-488690_640.jpg",
-  characterImg: "mind.png",
-  dialog: [
-    {speaker: "มายด์", text: "ถ้าอยากเป็นคุณหมอต้องหาหนังสือด้านไหนน้าาา? 🏥"}
-  ],
-  question: "หมวด 610 ในระบบ DDC หมายถึงอะไร?",
-  choices: [
-    {text: "การแพทย์", correct: true},
-    {text: "ปรัชญา", correct: false},
-    {text: "วรรณกรรม", correct: false},
-    {text: "การท่องเที่ยว", correct: false}
-  ],
-  hint: "คำใบ้: เกี่ยวกับสุขภาพและการดูแลร่างกาย",
-  correctResponse: "ใช่เลย! ดูแลสุขภาพด้วยนะ~ 😊",
-  wrongResponse: "ผิดจ้า~ ไม่ใช่หมวดนั้นน้า"
-},
-{
-  bg: "https://cdn.pixabay.com/photo/2017/07/15/22/07/library-2507902_640.jpg",
-  characterImg: "mind.png",
-  dialog: [
-    {speaker: "มายด์", text: "เวลาเรียงหนังสือ ต้องเรียงตามเลขอะไรน้า? 🔢"}
-  ],
-  question: "การเรียงหนังสือตามระบบ DDC ใช้หลักใด?",
-  choices: [
-    {text: "เรียงตามเลขจากน้อยไปมาก", correct: true},
-    {text: "เรียงตามสีปก", correct: false},
-    {text: "เรียงตามชื่อผู้แต่ง", correct: false},
-    {text: "เรียงแบบสุ่ม", correct: false}
-  ],
-  hint: "คำใบ้: ใช้หลักการทางคณิตศาสตร์",
-  correctResponse: "เยี่ยมมาก! เธอจัดหนังสือเก่งแน่นอน 🧠",
-  wrongResponse: "ยังไม่ถูกน้า ลองเรียงดูในใจอีกที"
-},
-{
-  bg: "https://cdn.pixabay.com/photo/2016/01/27/04/32/books-1163695_640.jpg",
-  characterImg: "mind3.png",
-  dialog: [
-    {speaker: "มายด์", text: "ในห้องสมุด... DDC มีบทบาทสำคัญยังไงน้า? 🤔"}
-  ],
-  question: "ข้อใดต่อไปนี้ *ไม่ใช่* ประโยชน์ของระบบ DDC?",
-  choices: [
-    {text: "ทำให้หาหนังสือได้ยากขึ้น", correct: true},
-    {text: "ช่วยให้จัดหนังสือเป็นระบบ", correct: false},
-    {text: "ทำให้ผู้ใช้เข้าใจหมวดหมู่ได้ง่าย", correct: false},
-    {text: "เพิ่มประสิทธิภาพในการจัดเก็บ", correct: false}
-  ],
-  hint: "คำใบ้: คำตอบคือสิ่งที่ขัดแย้งกับจุดประสงค์ของ DDC",
-  correctResponse: "ตอบถูก! เธอรู้ลึกเลยนะเนี่ย~ 💖",
-  wrongResponse: "เอ๊ะ... ลองคิดใหม่อีกทีนะจ๊ะ"
-}
-     ];
-
+  const stages = [
+    {
+      bg: "https://cdn.pixabay.com/photo/2016/02/16/21/07/christmas-background-1204029_1280.jpg",
+      characterImg: "mind.png",
+      dialog: [
+        {speaker: "มายด์", text: "เรามารู้จักเลข DDC แบบละเอียดขึ้นกันเถอะ! 😄"}
+      ],
+      question: "ตัวเลข 3 หลักแรกของ DDC ใช้เพื่ออะไร?",
+      choices: [
+        {text: "บอกหมวดหลักของเนื้อหา", correct: true},
+        {text: "บอกชื่อผู้แต่ง", correct: false},
+        {text: "บอกสถานที่พิมพ์", correct: false},
+        {text: "บอกวันหมดอายุของหนังสือ", correct: false}
+      ],
+      hint: "คำใบ้: ใช้จัดเนื้อหาหลักของหนังสือเป็นกลุ่ม",
+      correctResponse: "ใช่เลย! เข้าใจหลักการแล้วนะเนี่ย 🤓",
+      wrongResponse: "อุ๊ยย~ ยังไม่ถูกนะ ลองอีกทีจ้า~"
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2023/01/26/02/15/books-7744938_1280.jpg",
+      characterImg: "mind2.png",
+      dialog: [
+        {speaker: "มายด์", text: "รู้ไหมว่า DDC เริ่มต้นจากใครน้า? 🧐"}
+      ],
+      question: "ใครเป็นผู้พัฒนาระบบทศนิยมดิวอี้?",
+      choices: [
+        {text: "Melvil Dewey", correct: true},
+        {text: "Albert Einstein", correct: false},
+        {text: "Bill Gates", correct: false},
+        {text: "Marie Curie", correct: false}
+      ],
+      hint: "คำใบ้: ชื่อเดียวกับชื่อระบบเลย~",
+      correctResponse: "เก่งมาก! จำชื่อเขาได้ด้วย 👏",
+      wrongResponse: "ยังไม่ถูกนะ ลองนึกดีๆสิ!"
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2015/07/31/11/45/library-869061_1280.jpg",
+      characterImg: "mind3.png",
+      dialog: [
+        {speaker: "มายด์", text: "บางหมวดอาจจะใช้เลขจุดทศนิยมต่อท้ายด้วยนะ ✨"}
+      ],
+      question: "เลขทศนิยมใน DDC ใช้เพื่ออะไร?",
+      choices: [
+        {text: "ระบุรายละเอียดเนื้อหาให้เฉพาะเจาะจงขึ้น", correct: true},
+        {text: "ใช้แทนราคาหนังสือ", correct: false},
+        {text: "ใช้บอกขนาดของหนังสือ", correct: false},
+        {text: "ใช้เรียงตามวันออกหนังสือ", correct: false}
+      ],
+      hint: "คำใบ้: ช่วยแยกย่อยหัวข้อได้ละเอียดมากขึ้น",
+      correctResponse: "สุดยอดเลย! เข้าใจระบบดีมาก 👍",
+      wrongResponse: "อ๊ะ ไม่ใช่น้า~ ลองตอบใหม่จ้า"
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_640.jpg",
+      characterImg: "mind2.png",
+      dialog: [
+        {speaker: "มายด์", text: "คิดว่า DDC มีทั้งหมดกี่หมวดหลักเอ่ย? 🤔"}
+      ],
+      question: "ระบบ DDC แบ่งหมวดหลักทั้งหมดกี่หมวด?",
+      choices: [
+        {text: "10 หมวด", correct: true},
+        {text: "5 หมวด", correct: false},
+        {text: "100 หมวด", correct: false},
+        {text: "26 หมวด", correct: false}
+      ],
+      hint: "คำใบ้: เริ่มตั้งแต่ 000 จนถึง 900",
+      correctResponse: "ตอบถูกต้องเลย~ เก่งมากจ้า! 🎊",
+      wrongResponse: "ใกล้แล้ว ลองนึกถึงเลขสามหลักสิ~"
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2024/07/31/12/20/books-8934573_640.jpg",
+      characterImg: "mind.png",
+      dialog: [
+        {speaker: "มายด์", text: "บางทีเราต้องดูป้ายเลขเรียงหนังสือด้วยนะ 📚"}
+      ],
+      question: "เลข DDC มักจะปรากฏอยู่ตรงไหนของหนังสือในห้องสมุด?",
+      choices: [
+        {text: "สันหนังสือ", correct: true},
+        {text: "ปกหลัง", correct: false},
+        {text: "ในเนื้อหา", correct: false},
+        {text: "ในคำนำ", correct: false}
+      ],
+      hint: "คำใบ้: ใช้จัดวางเรียงชั้นในห้องสมุด",
+      correctResponse: "ถูกต้อง! เธอนี่แหละนักจัดหมู่ตัวจริง 🏆",
+      wrongResponse: "อุ๊ย~ ลองดูรอบๆหนังสือดีๆอีกครั้งนะ"
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2020/07/24/09/49/books-5433432_640.jpg",
+      characterImg: "mind3.png",
+      dialog: [
+        {speaker: "มายด์", text: "รู้ไหมว่าแต่ละหมวด DDC มีตัวเลขอะไรบ้างน้า? 🧠"}
+      ],
+      question: "หมวด 000 ในระบบ DDC ใช้กับเรื่องอะไร?",
+      choices: [
+        {text: "ความรู้ทั่วไป", correct: true},
+        {text: "คณิตศาสตร์", correct: false},
+        {text: "ชีววิทยา", correct: false},
+        {text: "เทคโนโลยี", correct: false}
+      ],
+      hint: "คำใบ้: รวมเรื่องทั่วไป สารานุกรม และคอมพิวเตอร์",
+      correctResponse: "สุดยอด! เธอรู้จริงๆเลยนะ! 💡",
+      wrongResponse: "ผิดจ้า~ ยังไม่ใช่หมวดนี้นะ"
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2020/05/23/20/08/books-5211309_1280.jpg",
+      characterImg: "mind2.png",
+      dialog: [
+        {speaker: "มายด์", text: "หมวด ที่ 200 ใน DDC เกี่ยวกับอะไรน้าาาา~ 🙏"}
+      ],
+      question: "หมวด 200 ในระบบ DDC หมายถึงอะไร?",
+      choices: [
+        {text: "ศาสนา", correct: true},
+        {text: "สุขภาพ", correct: false},
+        {text: "วิทยาศาสตร์", correct: false},
+        {text: "กฎหมาย", correct: false}
+      ],
+      hint: "คำใบ้: ความเชื่อ",
+      correctResponse: "ตอบได้ดีมากเลย! เธอเก่งจริงๆ 🌼",
+      wrongResponse: "ยังไม่ใช่หมวดนี้นะ ลองใหม่ๆ"
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2014/10/14/20/14/library-488690_640.jpg",
+      characterImg: "mind.png",
+      dialog: [
+        {speaker: "มายด์", text: "ถ้าอยากเป็นคุณหมอต้องหาหนังสือด้านไหนน้าาา? 🏥"}
+      ],
+      question: "หมวด 610 ในระบบ DDC หมายถึงอะไร?",
+      choices: [
+        {text: "การแพทย์", correct: true},
+        {text: "ปรัชญา", correct: false},
+        {text: "วรรณกรรม", correct: false},
+        {text: "การท่องเที่ยว", correct: false}
+      ],
+      hint: "คำใบ้: เกี่ยวกับสุขภาพและการดูแลร่างกาย",
+      correctResponse: "ใช่เลย! ดูแลสุขภาพด้วยนะ~ 😊",
+      wrongResponse: "ผิดจ้า~ ไม่ใช่หมวดนั้นน้า"
+    },
+    {
+      bg: "https://cdn.pixabay.com/photo/2017/07/15/22/07/library-2507902_640.jpg",
+      characterImg: "mind.png",
+      dialog: [
+        {speaker: "มายด์", text: "เวลาเรียงหนังสือ ต้องเรียงตามเลขอะไรน้า? 🔢"}
+      ],
+      question: "การเรียงหนังสือตามระบบ DDC ใช้หลักใด?",
+      choices: [
+        {text: "เรียงตามเลขจากน้อยไปมาก", correct: true},
+        {text: "เรียงตามสีปก", correct: false},
+        {text: "เรียงตามชื่อผู้แต่ง", correct: false},
+        {text: "เรียงแบบสุ่ม", correct: false}
+      ],
+      hint: "คำใบ้: ใช้หลักการทางคณิตศาสตร์",
+      correctResponse: "เยี่ยมมาก! เธอเข้าใจระบบดีจริงๆ 🎉",
+      wrongResponse: "อุ๊ย ยังไม่ใช่นะ ลองตอบใหม่จ้า"
+    }
+  ];
 
   function setBackground(url) {
     gameContainer.style.backgroundImage = `url(${url})`;
-  }
-
-  function updateScore() {
-    scoreDisplay.textContent = `คะแนน: ${score}`;
   }
 
   function clearChoices() {
     choicesBox.innerHTML = "";
   }
 
-  function disableChoices() {
-    choicesBox.querySelectorAll("button").forEach(btn => btn.disabled = true);
-  }
-
-  function showFeedback(correct) {
-    dialogBox.style.animation = correct ? 'correctFlash 0.6s' : 'wrongFlash 0.6s';
-    dialogBox.addEventListener('animationend', () => dialogBox.style.animation = '', { once: true });
-  }
-
   function showDialog() {
-    const stage = stages[currentStage];
-    if (dialogIndex < stage.dialog.length) {
-      const line = stage.dialog[dialogIndex];
-      dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
-      dialogIndex++;
-      setTimeout(showDialog, 2000);
-    } else {
+    let current = stages[currentStage];
+    let line = current.dialog[dialogIndex];
+    dialogBox.innerHTML = `<div class="speaker">${line.speaker}:</div><div>${line.text}</div>`;
+    clearChoices();
+    if (dialogIndex >= current.dialog.length - 1) {
       showQuestion();
+    } else {
+      dialogIndex++;
+      // คลิกที่ dialogBox เพื่อไปบรรทัดถัดไป
+      dialogBox.onclick = () => {
+        dialogBox.onclick = null; // ป้องกันการคลิกซ้ำ
+        showDialog();
+      };
     }
   }
 
   function showQuestion() {
-    const stage = stages[currentStage];
-    dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
+    let current = stages[currentStage];
+    dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${current.question}</div>`;
     clearChoices();
-    hintUsed = false;
-    remainingTime = 10;
-    timerDisplay.textContent = `เวลา: ${remainingTime} วินาที`;
-
-    if (countdownTimer) clearInterval(countdownTimer);
-    countdownTimer = setInterval(() => {
-      remainingTime--;
-      timerDisplay.textContent = `เวลา: ${remainingTime} วินาที`;
-      if (remainingTime <= 0) {
-        clearInterval(countdownTimer);
-        disableChoices();
-        wrongSound.play();
-        showFeedback(false);
-        dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">หมดเวลาแล้วน้า~ ข้อต่อไปกันเถอะ!</div>`;
-        setTimeout(nextStage, 2000);
-      }
-    }, 1000);
-
-    const shuffledChoices = [...stage.choices].sort(() => Math.random() - 0.5);
-    shuffledChoices.forEach(choice => {
-      const btn = document.createElement("button");
+    current.choices.forEach((choice, idx) => {
+      let btn = document.createElement("button");
       btn.textContent = choice.text;
-      btn.onclick = () => {
-        clearInterval(countdownTimer);
-        disableChoices();
-        if (choice.correct) {
-          correctSound.play();
-          score += 1;
-          updateScore();
-          showFeedback(true);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:green;">${stage.correctResponse}</div>`;
-        } else {
-          wrongSound.play();
-          showFeedback(false);
-          dialogBox.innerHTML = `<div class="speaker">มายด์:</div><div style="color:red;">${stage.wrongResponse}</div>`;
-        }
-        setTimeout(nextStage, 2000);
-      };
+      btn.onclick = () => answerQuestion(idx);
       choicesBox.appendChild(btn);
     });
+    showHintButton();
+    startTimer();
+  }
 
-    const hintBtn = document.createElement("button");
+  function showHintButton() {
+    if (hintUsed) return; // แสดง hint ได้แค่ครั้งเดียวต่อเกม
+    let hintBtn = document.createElement("button");
     hintBtn.textContent = "ขอคำใบ้ 💡";
-    hintBtn.style.backgroundColor = "#3a8fbd";
-    hintBtn.style.boxShadow = "0 4px 8px #3a8fbd88";
+    hintBtn.style.backgroundColor = "#f08a5d";
+    hintBtn.style.boxShadow = "0 4px 8px #f08a5d88";
     hintBtn.onclick = () => {
-      if (!hintUsed && stage.hint) {
-        hintUsed = true;
-        alert(`คำใบ้: ${stage.hint}`);
-        hintBtn.disabled = true;
-      }
+      hintUsed = true;
+      alert(stages[currentStage].hint);
+      hintBtn.disabled = true;
     };
-    if (!stage.hint) hintBtn.disabled = true;
     choicesBox.appendChild(hintBtn);
+  }
 
-    const restartBtn = document.createElement("button");
-    restartBtn.textContent = "เล่นใหม่ 🔄";
-    restartBtn.style.backgroundColor = "#6ab04c";
-    restartBtn.style.boxShadow = "0 4px 8px #6ab04c88";
-    restartBtn.onclick = () => location.reload();
-    choicesBox.appendChild(restartBtn);
+  function answerQuestion(choiceIndex) {
+    stopTimer();
+    let current = stages[currentStage];
+    let choice = current.choices[choiceIndex];
+    clearChoices();
+
+    if (choice.correct) {
+      score++;
+      scoreDisplay.textContent = `คะแนน: ${score}`;
+      correctSound.currentTime = 0;
+      correctSound.play();
+      dialogBox.innerHTML = `
+        <div class="speaker">มายด์:</div>
+        <div style="animation: correctFlash 1s ease;">${current.correctResponse}</div>
+      `;
+    } else {
+      wrongSound.currentTime = 0;
+      wrongSound.play();
+      dialogBox.innerHTML = `
+        <div class="speaker">มายด์:</div>
+        <div style="animation: wrongFlash 1s ease;">${current.wrongResponse}</div>
+      `;
+    }
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "ต่อไป ➡️";
+    nextBtn.style.backgroundColor = "#6ab04c";
+    nextBtn.style.boxShadow = "0 4px 8px #6ab04c88";
+    nextBtn.onclick = nextStage;
+    choicesBox.appendChild(nextBtn);
   }
 
   function nextStage() {
@@ -533,39 +499,61 @@
       choicesBox.appendChild(restartBtn);
     } else {
       setBackground(stages[currentStage].bg);
+      characterImg.src = stages[currentStage].characterImg;  // *** เพิ่มบรรทัดนี้ ***
       showDialog();
     }
   }
 
+  function startTimer() {
+    remainingTime = 10;
+    timerDisplay.textContent = `เวลา: ${remainingTime} วินาที`;
+    clearInterval(countdownTimer);
+    countdownTimer = setInterval(() => {
+      remainingTime--;
+      timerDisplay.textContent = `เวลา: ${remainingTime} วินาที`;
+      if (remainingTime <= 0) {
+        clearInterval(countdownTimer);
+        alert("หมดเวลาแล้ว! ต้องตอบคำถามให้ทันเวลา.");
+        // บังคับให้เลือกผิด ถ้าไม่ตอบ
+        answerQuestion(-1);
+      }
+    }, 1000);
+  }
+
+  function stopTimer() {
+    clearInterval(countdownTimer);
+    timerDisplay.textContent = "";
+  }
+
   function sendScoreToGoogleSheet(name, score) {
-    const url = 'https://script.google.com/macros/s/AKfycbyE6A6wP3Xh5J4GPaoVYVkDmMvo2UHENIHBIWBFUYqOBv77aWTcx1fDfFbsyGQIHU-7/exec';
-    fetch(url, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, score })
-    }).catch(err => console.error('ส่งคะแนนไม่สำเร็จ', err));
+    // ฟังก์ชันส่งคะแนนไป Google Sheets (เช่นผ่าน Google Apps Script)
+    fetch("https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec", {
+      method: "POST",
+      body: JSON.stringify({ player: name, score: score }),
+      headers: { 'Content-Type': 'application/json' }
+    }).then(res => {
+      if (res.ok) console.log("ส่งคะแนนเรียบร้อย");
+      else console.error("ส่งคะแนนล้มเหลว");
+    }).catch(e => console.error("ส่งคะแนนล้มเหลว", e));
   }
 
   function startGame() {
     playerName = playerNameInput.value.trim();
     if (!playerName) {
-      alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
+      alert("กรุณากรอกชื่อของคุณก่อนเริ่มเกมค่ะ!");
       playerNameInput.focus();
       return;
     }
-    startScreen.style.display = 'none';
-    currentStage = 0;
-    dialogIndex = 0;
-    score = 0;
-    updateScore();
+    startScreen.style.display = "none";
     setBackground(stages[0].bg);
+    characterImg.src = stages[0].characterImg;  // *** เพิ่มบรรทัดนี้ ***
     showDialog();
   }
 
   startBtn.addEventListener('click', startGame);
-  playerNameInput.addEventListener('keydown', e => { if(e.key === 'Enter') startGame(); });
-  document.getElementById('character-img').addEventListener('dragstart', e => e.preventDefault());
+  playerNameInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') startGame();
+  });
 </script>
 </body>
 </html>
