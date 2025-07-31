@@ -231,7 +231,7 @@
   const correctSound = document.getElementById('correct-sound');
   const wrongSound = document.getElementById('wrong-sound');
   const timerDisplay = document.getElementById('timer-display');
-
+  const characterImg = document.getElementById('character-img');
   let playerName = '';
   let currentStage = 0;
   let dialogIndex = 0;
@@ -243,6 +243,7 @@
    const stages = [
   {
   bg: "https://cdn.pixabay.com/photo/2016/02/16/21/07/christmas-background-1204029_1280.jpg",
+    characterImg: "mind.png",
   dialog: [
     {speaker: "มายด์", text: "เรามารู้จักเลข DDC แบบละเอียดขึ้นกันเถอะ! 😄"}
   ],
@@ -259,6 +260,7 @@
 },
 {
   bg: "https://cdn.pixabay.com/photo/2023/01/26/02/15/books-7744938_1280.jpg",
+  characterImg: "mind2.png",
   dialog: [
     {speaker: "มายด์", text: "รู้ไหมว่า DDC เริ่มต้นจากใครน้า? 🧐"}
   ],
@@ -275,6 +277,7 @@
 },
 {
   bg: "https://cdn.pixabay.com/photo/2015/07/31/11/45/library-869061_1280.jpg",
+  characterImg: "mind3.png",
   dialog: [
     {speaker: "มายด์", text: "บางหมวดอาจจะใช้เลขจุดทศนิยมต่อท้ายด้วยนะ ✨"}
   ],
@@ -291,6 +294,7 @@
 },
 {
   bg: "https://cdn.pixabay.com/photo/2017/08/06/22/01/books-2596809_640.jpg",
+  characterImg: "mind.png",
   dialog: [
     {speaker: "มายด์", text: "คิดว่า DDC มีทั้งหมดกี่หมวดหลักเอ่ย? 🤔"}
   ],
@@ -307,6 +311,7 @@
 },
 {
   bg: "https://cdn.pixabay.com/photo/2024/07/31/12/20/books-8934573_640.jpg",
+  characterImg: "mind2.png",
   dialog: [
     {speaker: "มายด์", text: "บางทีเราต้องดูป้ายเลขเรียงหนังสือด้วยนะ 📚"}
   ],
@@ -323,6 +328,7 @@
 },
 {
   bg: "https://cdn.pixabay.com/photo/2020/07/24/09/49/books-5433432_640.jpg",
+  characterImg: "mind2.png",
   dialog: [
     {speaker: "มายด์", text: "รู้ไหมว่าแต่ละหมวด DDC มีตัวเลขอะไรบ้างน้า? 🧠"}
   ],
@@ -339,6 +345,7 @@
 },
 {
   bg: "https://cdn.pixabay.com/photo/2020/05/23/20/08/books-5211309_1280.jpg",
+  characterImg: "mind3.png",
   dialog: [
     {speaker: "มายด์", text: "หมวด ที่ 200 ใน DDC เกี่ยวกับอะไรน้าาาา~ 🙏"}
   ],
@@ -355,6 +362,7 @@
 },
 {
   bg: "https://cdn.pixabay.com/photo/2014/10/14/20/14/library-488690_640.jpg",
+  characterImg: "mind.png",
   dialog: [
     {speaker: "มายด์", text: "ถ้าอยากเป็นคุณหมอต้องหาหนังสือด้านไหนน้าาา? 🏥"}
   ],
@@ -371,6 +379,7 @@
 },
 {
   bg: "https://cdn.pixabay.com/photo/2017/07/15/22/07/library-2507902_640.jpg",
+  characterImg: "mind.png",
   dialog: [
     {speaker: "มายด์", text: "เวลาเรียงหนังสือ ต้องเรียงตามเลขอะไรน้า? 🔢"}
   ],
@@ -387,6 +396,7 @@
 },
 {
   bg: "https://cdn.pixabay.com/photo/2016/01/27/04/32/books-1163695_640.jpg",
+  characterImg: "mind3.png",
   dialog: [
     {speaker: "มายด์", text: "ในห้องสมุด... DDC มีบทบาทสำคัญยังไงน้า? 🤔"}
   ],
@@ -444,7 +454,7 @@
     hintUsed = false;
     remainingTime = 10;
     timerDisplay.textContent = `เวลา: ${remainingTime} วินาที`;
-
+    characterImg.src = stage.characterImg;
     if (countdownTimer) clearInterval(countdownTimer);
     countdownTimer = setInterval(() => {
       remainingTime--;
