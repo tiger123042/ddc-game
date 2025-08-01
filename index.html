@@ -224,7 +224,8 @@
 <audio id="correct-sound" src="correct.mp3" preload="auto"></audio>
 <audio id="wrong-sound" src="wrong.mp3" preload="auto"></audio>
 <audio id="yay-sound" src="yay.mp3" preload="auto"></audio>
-<audio id="background-music-sound" src="background-music.mp3" preload="auto"></audio>
+<audio id="background-music-sound" src="background-music.mp3" preload="auto" loop></audio>
+
 <script>
   const dialogBox = document.getElementById('dialog-box');
   const choicesBox = document.getElementById('choices');
@@ -530,6 +531,10 @@ function showFeedback(correct, yay = false) {
     if (currentStage >= stages.length) {
         backgroundsound.pause(); // หยุดเพลง
   backgroundsound.currentTime = 0; // รีเซ็ตตำแหน่ง
+  questionContainer.style.display = 'none';
+  resultScreen.style.display = 'block';
+  finalScoreElement.innerText = `${playerName} ได้คะแนน ${score}/${totalPossibleScore}`;
+  return;
       sendScoreToGoogleSheet(playerName, score);
       dialogBox.innerHTML = `
         <div class="speaker">มายด์:</div>
@@ -571,7 +576,7 @@ function showFeedback(correct, yay = false) {
   score = 0;
   updateScore();
   setBackground(stages[0].bg);
-  backgroundsound.volume = 0.4; // ตั้งระดับเสียง
+  backgroundsound.volume = 0.4; // ปรับเสียงให้นุ่มนวล
   backgroundsound.play(); // เล่นเพลงเมื่อเริ่มเกม
   showDialog();
 }
