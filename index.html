@@ -182,7 +182,7 @@
     0%, 100% { background-color: rgba(144,238,144, 0.3); }
     50% { background-color: rgba(34,139,34, 0.6); }
   }
-  @keyframes backgroundFlash {
+  @keyframes wrongFlash {
     0%, 100% { background-color: rgba(255,182,193, 0.3); }
     50% { background-color: rgba(220,20,60, 0.6); }
   }
@@ -224,8 +224,6 @@
 <audio id="correct-sound" src="correct.mp3" preload="auto"></audio>
 <audio id="wrong-sound" src="wrong.mp3" preload="auto"></audio>
 <audio id="yay-sound" src="yay.mp3" preload="auto"></audio>
-<audio id="background-music-sound" src="background-music.mp3" preload="auto" loop></audio>
-
 <script>
   const dialogBox = document.getElementById('dialog-box');
   const choicesBox = document.getElementById('choices');
@@ -237,7 +235,6 @@
   const correctSound = document.getElementById('correct-sound');
   const yaySound = document.getElementById('yay-sound');
   const wrongSound = document.getElementById('wrong-sound');
-  const backgroundsound = document.getElementById('background-music-sound');
   const timerDisplay = document.getElementById('timer-display');
   const characterImg = document.getElementById('character-img');
   let playerName = '';
@@ -529,12 +526,6 @@ function showFeedback(correct, yay = false) {
     dialogIndex = 0;
     clearChoices();
     if (currentStage >= stages.length) {
-        backgroundsound.pause(); // หยุดเพลง
-  backgroundsound.currentTime = 0; // รีเซ็ตตำแหน่ง
-  questionContainer.style.display = 'none';
-  resultScreen.style.display = 'block';
-  finalScoreElement.innerText = `${playerName} ได้คะแนน ${score}/${totalPossibleScore}`;
-  return;
       sendScoreToGoogleSheet(playerName, score);
       dialogBox.innerHTML = `
         <div class="speaker">มายด์:</div>
@@ -564,22 +555,12 @@ function showFeedback(correct, yay = false) {
   }
 
   function startGame() {
-  playerName = playerNameInput.value.trim();
-  if (!playerName) {
-    alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
-    playerNameInput.focus();
-    return;
-  }
-  startScreen.style.display = 'none';
-  currentStage = 0;
-  dialogIndex = 0;
-  score = 0;
-  updateScore();
-  setBackground(stages[0].bg);
-  backgroundsound.volume = 0.4; // ปรับเสียงให้นุ่มนวล
-  backgroundsound.play(); // เล่นเพลงเมื่อเริ่มเกม
-  showDialog();
-}
+    playerName = playerNameInput.value.trim();
+    if (!playerName) {
+      alert('กรุณากรอกชื่อของคุณก่อนเริ่มเกม');
+      playerNameInput.focus();
+      return;
+    }
     startScreen.style.display = 'none';
     currentStage = 0;
     dialogIndex = 0;
