@@ -220,7 +220,8 @@
   <input type="text" id="player-name-input" placeholder="ชื่อของคุณ..." />
   <button id="start-btn">เริ่มเกม</button>
 </div>
-<audio id="bg-music" src="background-music.mp3" autoplay loop preload="auto"></audio>
+
+  <audio id="bg-music" src="background-music.mp3" autoplay loop preload="auto"></audio>
 <audio id="correct-sound" src="correct.mp3" preload="auto"></audio>
 <audio id="wrong-sound" src="wrong.mp3" preload="auto"></audio>
 <audio id="yay-sound" src="yay.mp3" preload="auto"></audio>
@@ -562,11 +563,12 @@ function showFeedback(correct, yay = false) {
       return;
     }
     startScreen.style.display = 'none';
-    const bgMusic = document.getElementById('bg-music');
-bgMusic.volume = 0.4; // ปรับระดับเสียงตามต้องการ
-bgMusic.play().catch(() => {
-  // สำหรับบางเบราว์เซอร์ที่ต้องการให้ผู้ใช้คลิกก่อนถึงจะเล่นได้
-  console.log('ไม่สามารถเล่นเพลงอัตโนมัติ ต้องให้ผู้ใช้มี interaction ก่อน');
+        // 🎵 เล่นเพลงพื้นหลัง
+      const music = document.getElementById('bg-music');
+      music.volume = 0.3;
+      music.play().catch((e) => {
+        console.warn("ไม่สามารถเล่นเพลงได้อัตโนมัติ: ", e);
+      });
     currentStage = 0;
     dialogIndex = 0;
     score = 0;
