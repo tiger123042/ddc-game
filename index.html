@@ -174,6 +174,15 @@
     background: #a6284a;
     box-shadow: 0 7px 14px #a6284aaa;
   }
+  #info-row {
+  display: flex;
+  justify-content: space-between; /* เว้นช่องว่างระหว่างคะแนน/เวลา */
+  align-items: center;
+  max-width: 90%;
+  margin: 10px auto;
+  font-size: 1.2rem;
+  gap: 10px;
+}
   @keyframes correctFlash {
     0%, 100% { background-color: rgba(144,238,144, 0.3); }
     50% { background-color: rgba(34,139,34, 0.6); }
@@ -216,8 +225,12 @@
   <img id="character-img" src="mind.png" alt="มายด์" />
   <div id="dialog-box"></div>
   <div id="choices"></div>
-  <div id="score-display">คะแนน: 0</div>
-  <div id="timer-display">เวลา: 10 วินาที</div>
+
+  <!-- กล่องรวมคะแนนกับเวลา -->
+  <div id="info-row">
+    <div id="score-display">คะแนน: 0</div>
+    <div id="timer-display">เวลา: 10 วินาที</div>
+  </div>
 </div>
 
 <div id="start-screen">
@@ -574,6 +587,7 @@ function showFeedback(correct, yay = false) {
 </script>
 </body>
 </html>
+
 
 
 
