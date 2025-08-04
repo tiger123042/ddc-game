@@ -186,27 +186,41 @@
     0%, 100% { background-color: rgba(255,182,193, 0.3); }
     50% { background-color: rgba(220,20,60, 0.6); }
   }
-  @media (max-width: 600px) {
-    #choices button {
-      flex: 1 1 100%;
-    }
-    #dialog-box {
-      padding-left: 140px;
-      font-size: 1rem;
-      max-height: 55%;
-    }
-    #character-img {
-   position: absolute;
-  top: 120px;
-  left: 40px;
-  width: 280px;
-  height: 420px;
-  object-fit: contain;
-  user-select: none;
-  pointer-events: none;
-  z-index: 1; /* เปลี่ยนจาก 5 เป็น 1 */
-    }
+@media (max-width: 600px) {
+  #choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px; /* ลดช่องว่างระหว่างปุ่ม */
+    margin-top: 10px;
+    padding: 0 10px;
   }
+
+  #choices button {
+    flex: 1 1 calc(50% - 12px); /* 2 ปุ่มต่อแถว, มีช่องว่าง */
+    padding: 8px 4px;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  #dialog-box {
+    padding-left: 140px;
+    font-size: 1rem;
+    max-height: 55%;
+  }
+
+  #character-img {
+    position: absolute;
+    top: 120px;
+    left: 40px;
+    width: 280px;
+    height: 420px;
+    object-fit: contain;
+    user-select: none;
+    pointer-events: none;
+    z-index: 1;
+  }
+}
 </style>
 </head>
 <body>
@@ -578,6 +592,7 @@ function showFeedback(correct, yay = false) {
 </script>
 </body>
 </html>
+
 
 
 
