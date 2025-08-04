@@ -51,18 +51,16 @@
     opacity: 0.3;
   }
   #dialog-box {
-    position: relative;
-    background: rgba(255, 255, 255, 0.85);
-    border-radius: 20px;
-    padding: 22px 24px 22px 220px;
-    font-size: 1.25rem;
-    line-height: 1.6;
-    max-height: 50%;
-    overflow-y: auto;
-    box-shadow: inset 0 0 12px #d6336c33;
-    color: #4b2e49;
-    transition: background-color 0.3s ease;
-    z-index: 10;
+     max-width: 100%;
+  width: 90vw;
+  padding: 10px;
+  font-size: 1.2em;
+  word-wrap: break-word;
+  word-break: break-word;
+  box-sizing: border-box;
+  background-color: #fff;
+  border-radius: 10px;
+  margin: 0 auto;
   }
   .speaker {
     font-weight: bold;
@@ -583,5 +581,6 @@ function showFeedback(correct, yay = false) {
 </script>
 </body>
 </html>
+
 
 
