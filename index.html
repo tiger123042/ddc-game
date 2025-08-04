@@ -99,26 +99,17 @@
     cursor: default;
     box-shadow: none;
   }
-  #score-display {
-    margin-top: 14px;
-    font-weight: 700;
-    text-align: center;
-    font-size: 1.3rem;
-    color: #d6336c;
-    text-shadow: 1px 1px 3px #fff;
-    min-height: 30px;
-    user-select: none;
-    z-index: 20;
-  }
-  #timer-display {
-    margin-top: 10px;
+ 
+#score-display,
+#timer-display {
+   margin-top: 10px;
     font-size: 1.2rem;
     color: #ff6b6b;
     font-weight: bold;
     text-align: center;
     z-index: 20;
     background: rgba(255, 255, 255, 0.85);
-  }
+}
   #character-img {
     position: absolute;
     top: 120px;
@@ -587,6 +578,7 @@ function showFeedback(correct, yay = false) {
 </script>
 </body>
 </html>
+
 
 
 
