@@ -187,38 +187,56 @@
     50% { background-color: rgba(220,20,60, 0.6); }
   }
 @media (max-width: 600px) {
-  #choices {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
-    margin-top: 10px;
-    padding: 0 10px;
-  }
+#choices {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+  padding: 0 10px;
+}
 
+#choices button {
+  flex: 1 1 calc(50% - 12px);
+  padding: 8px 4px;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+#dialog-box {
+  padding-left: 50px;
+  font-size: 1rem;
+  max-height: 55%;
+}
+
+#character-img {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  width: 280px;
+  height: 460px;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  z-index: 1;
+}
+}
+  @media (min-width: 768px) {
   #choices button {
-    flex: 1 1 calc(50% - 12px);
-    padding: 8px 4px;
-    font-size: 0.9rem;
-    margin: 0;
+    flex: 1 1 40%;
+    font-size: 1rem;
   }
 
   #dialog-box {
-    padding-left: 50px;
-    font-size: 1rem;
-    max-height: 55%;
+    padding-left: 150px;
+    font-size: 1.2rem;
   }
 
   #character-img {
-    position: absolute;
-    top: -10px; /* ขยับขึ้นบน */
-    left: 10px;
-    width: 280px;
-    height: 460px;
-    object-fit: contain;
-    user-select: none;
-    pointer-events: none;
-    z-index: 1;
+    top: 20px;
+    left: 40px;
+    width: 300px;
+    height: 480px;
   }
 }
 </style>
