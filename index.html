@@ -240,7 +240,7 @@
   let currentStage = 0;
   let dialogIndex = 0;
   let score = 0;
-  let hintUsed = false;
+
   let countdownTimer = null;
   let remainingTime = 10;
 
@@ -456,7 +456,7 @@ function showFeedback(correct, yay = false) {
     const stage = stages[currentStage];
     dialogBox.innerHTML = `<div class="speaker">คำถาม:</div><div>${stage.question}</div>`;
     clearChoices();
-    hintUsed = false;
+  
     remainingTime = 10;
     timerDisplay.textContent = `เวลา: ${remainingTime} วินาที`;
     characterImg.src = stage.characterImg;
@@ -497,20 +497,6 @@ function showFeedback(correct, yay = false) {
       };
       choicesBox.appendChild(btn);
     });
-
-    const hintBtn = document.createElement("button");
-    hintBtn.textContent = "ขอคำใบ้ 💡";
-    hintBtn.style.backgroundColor = "#3a8fbd";
-    hintBtn.style.boxShadow = "0 4px 8px #3a8fbd88";
-    hintBtn.onclick = () => {
-      if (!hintUsed && stage.hint) {
-        hintUsed = true;
-        alert(`คำใบ้: ${stage.hint}`);
-        hintBtn.disabled = true;
-      }
-    };
-    if (!stage.hint) hintBtn.disabled = true;
-    choicesBox.appendChild(hintBtn);
 
     const restartBtn = document.createElement("button");
     restartBtn.textContent = "เล่นใหม่ 🔄";
@@ -581,6 +567,7 @@ function showFeedback(correct, yay = false) {
 </script>
 </body>
 </html>
+
 
 
 
