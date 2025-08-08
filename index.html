@@ -25,9 +25,10 @@
     font-size: 2.4rem;
     text-align: center;
   }
-  #game-container {
+#game-container {
   width: 90%;
   max-width: 700px;
+  /* ลบ height: 70vh; */
   background: #fff8f0;
   border-radius: 25px;
   box-shadow: 0 12px 24px rgba(0,0,0,0.3);
@@ -608,24 +609,22 @@ function showFeedback(correct, yay = false) {
   playerNameInput.addEventListener('keydown', e => { if(e.key === 'Enter') startGame(); });
   document.getElementById('character-img').addEventListener('dragstart', e => e.preventDefault());
 
-  // ให้ container สูงกว่าเนื้อหาข้างใน 10px
-function adjustGameContainerHeight() {
-  const container = document.getElementById('game-container');
-  const contentHeight = container.scrollHeight; 
-  container.style.height = (contentHeight + 10) + 'px';
-}
+  function adjustGameContainerHeight() {
+    const container = document.getElementById('game-container');
+    const contentHeight = container.scrollHeight;
+    container.style.height = (contentHeight + 10) + 'px';
+  }
 
-// เรียกเมื่อโหลดเสร็จ และเวลาเนื้อหาเปลี่ยน
-window.addEventListener('load', adjustGameContainerHeight);
-window.addEventListener('resize', adjustGameContainerHeight);
+  window.addEventListener('load', adjustGameContainerHeight);
+  window.addEventListener('resize', adjustGameContainerHeight);
 
-// ถ้ามีการอัปเดตข้อความหรือเนื้อหา
-const observer = new MutationObserver(adjustGameContainerHeight);
-observer.observe(document.getElementById('game-container'), { childList: true, subtree: true });
+  const observer = new MutationObserver(adjustGameContainerHeight);
+  observer.observe(document.getElementById('game-container'), { childList: true, subtree: true });
 
 </script>
 </body>
 </html>
+
 
 
 
